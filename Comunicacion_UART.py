@@ -36,10 +36,14 @@ try:
         print('PWM value is: ', pwm_value)
         print('***** Data Receiving from PSoC *****')
         rx_data = GPIO.input(pin_receive)
-        time.sleep(3)
+        print('Data value is: ', rx_data)
+        time.sleep(1)
         print('***** Data Transmitting from Jetson *****')
         GPIO.output(pwm_value)
-        time.sleep(3)
+        time.sleep(1)
 finally:
     GPIO.cleanup()
 
+
+# $ /boot/config.txt
+# $ enable_uart= 1
