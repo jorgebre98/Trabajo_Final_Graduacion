@@ -2,31 +2,44 @@
 
 ### Autor: Jorge Andrés Brenes Alfaro
 
-## Comunicación
+## Comunicación UART
 
 #El código desarrollado a continuación permite la comunicación de una tajeta
 #NVIDIA Jetson TX 2 con un PSoC con el fin de enviar datos para controlar
 #una planta de péndulo amortiguado a hélice (PAHM).
 
 import Jetson.GPIO
+import serial
 import time
-
-GPIO.setmode(GPIO.BOARD)
 
 pin_transmit = 8
 pint_receive = 10
-baudrate = 115200
-pwm_value = randint(0,4)
+#pwm_value = randint(0,4)
 
-while True:
-    try:
-        print('Data Transmitting from Jetson')
-        pin_transmit.write(pwm_value.enconde())
-        print('Data Receiving from PSoC')
-        data = pin_receive.readline()
-        if data:
-            print(data)
-            time.sleep(1)
-    except Exception as e:
-        print(e)
-        pín_transmit.close()
+#pin_transmit = serial.Serial('??', baudrate=115200, parity=serial.PARITY.NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=1)
+#pin_receive = serial.Serial('??', baudrate=115200, parity=serial.PARITY.NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=1)
+
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(pin_transmit, GPIO.OUT, initial=GPIO.HIGH)  # pin_transmit set as output
+GPIO.setup(pin_receive, GPIO.IN, initial=GPIO.HIGH)   # pin_transmit set as output
+
+#while True:
+    #pwm_value = randint(0,4)
+    #rx_data = pin_receive.read()
+    #print(rx_data)
+    #pwm_value = RL_controller(rx_data) # futuramente se llama al controlador de RL
+    #pin_transmit.write(pwm_value)
+
+try:
+    while True:
+        pwm_value = randint(0,4)
+        print('PWM value is: ', pwm_value)
+        print('***** Data Receiving from PSoC *****')
+        rx_data = GPIO.input(pin_receive)
+        time.sleep(3)
+        print('***** Data Transmitting from Jetson *****')
+        GPIO.output(pwm_value)
+        time.sleep(3)
+finally:
+    GPIO.cleanup()
+
