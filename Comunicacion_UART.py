@@ -20,6 +20,7 @@ pint_receive = 10
 #pin_receive = serial.Serial('??', baudrate=115200, parity=serial.PARITY.NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=1)
 
 GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
 GPIO.setup(pin_transmit, GPIO.OUT, initial=GPIO.HIGH)  # pin_transmit set as output
 GPIO.setup(pin_receive, GPIO.IN, initial=GPIO.HIGH)   # pin_transmit set as output
 
