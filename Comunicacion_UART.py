@@ -10,24 +10,23 @@ import serial
 import time
 
 
-serial_port = serial.Serial('dev/ttyTHS2', baudrate=115200, parity=serial.PARITY.NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS)#, timeout=1)
+serial_port = serial.Serial("/dev/ttyTHS2", 
+			baudrate=115200,
+			stopbits=serial.STOPBITS_ONE,
+			bytesize=serial.EIGHTBITS)
 
 time.sleep(1)
 
-serial_port.write('Demostración de UART')
-cont=0
+serial_port.write('Demostracion de UART'.encode())
+serial_port.write('\r\nNVIDIA Jetson TX2\r\n'.encode())
+
 while True:
     if serial_port.inWaiting() > 0:
         datos = serial_port.read()
-        print('Se recibe: ', datos)
-
-        serial_port.write(datos)
-        if datos == '/r'.encode():
-            serial_port.write('/n'.encode())
-        if cont == 20:
-            print(exit)
-            exit()
-        cont += 1
+        print(datos)
+        serial_port.write(str(datos).encode())
+        if datos == "\r".encode():
+            serial_port.write("\n".encode())
 serial_port.close()
 
 
