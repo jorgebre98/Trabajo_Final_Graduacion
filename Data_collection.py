@@ -6,9 +6,12 @@
 # NVIDIA Jetson TX 2 con un PSoC con el fin de enviar datos para controlar
 # una planta de péndulo amortiguado a hélice (PAHM).
 
-import serial
 import time
+import serial
 import random
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 # Definici[on del puerto
 serial_port = serial.Serial("/dev/ttyTHS2", 
@@ -32,4 +35,20 @@ while cont < 20:
         pwm_value = round(random.uniform(0,4))
         serial_port.write(pwm_value)
         print("Datos enviados: ", pwm_value)
+        cont += 1 
 serial_port.close()
+
+
+star, end, sampling = -2,10,0.02
+time = np.concatenate([np.arange(star,end,sampling), np.zeros(1000)])
+Amplitude = round(random.uniform(0,4),4)
+
+# Función escalón
+def step_function(A,t):
+    u = (t >= 0)*A
+    return u
+
+# Función rampa
+def ramp_function(A,t):
+    r = t*step_function(A,t)
+    return r
