@@ -28,32 +28,25 @@ values = [[0,0,0]]
 cont = 0
 
 while cont <= 1000:
-	if serial_port.inWaiting() > 0:
-		pwm_value= round(random.uniform(0,4),10) # Entrada random
-
-        
-         #   pwm_value = step[cont] # Entrada escalón
-        
-         #   pwm_value= r[cont] # Entrada rampa
-        
-	
-       
-        
-        	ini = time.time()
-        	serial_port.write(pwm_value)
-        	angle = serial_port.read()
-        	fin = time.time()
-        	latencia = fin-ini
-        	values = [latencia, pwm_value,angle]
-        	print("\r\nLatencia: ", latencia,"\r\nDatos recibidos: ", datos, "\r\nDatos tansmitidos: ", pwm_value)        
-        	cont += 1 
+        if serial_port.inWaiting() > 0:
+                pwm_value= round(random.uniform(0,4),10) # Entrada random
+                #pwm_value = step[cont] # Entrada escalón
+                #pwm_value= r[cont] # Entrada rampa
+                ini = time.time()
+                serial_port.write(pwm_value)
+                angle = serial_port.read()
+                fin = time.time()
+                latencia = fin-ini
+                values = [latencia, pwm_value,angle]
+                print("\r\nLatencia: ", latencia,"\r\nDatos recibidos: ", datos, "\r\nDatos tansmitidos: ", pwm_value)        
+                cont += 1
 archivo_excel(values)
 serial_port.close()
 
 
-star, end, sampling = -2,10,0.02
-time = np.concatenate([np.arange(star,end,sampling), np.zeros(1000)])
-Amplitude = round(random.uniform(0,4),4)
+#star, end, sampling = -2,10,0.02
+#time = np.concatenate([np.arange(star,end,sampling), np.zeros(1000)])
+#Amplitude = round(random.uniform(0,4),4)
 
 
 # ********************************** Función Escalón **********************************#
