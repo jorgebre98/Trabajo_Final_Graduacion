@@ -26,29 +26,27 @@ serial_port.write('\r\nNVIDIA Jetson TX2\r\n'.encode())
 
 values = [[0,0,0]]
 cont = 0
-entrada  = str(input("Elija una entrada: "))
 
-while cont <= len(entrada):
-    if serial_port.inWaiting() > 0:
+while cont <= 1000:
+	if serial_port.inWaiting() > 0:
+		pwm_value= round(random.uniform(0,4),10) # Entrada random
 
-        if entrada == 'Escalon':
-            pwm_value = step[cont] # Entrada escalón
-        elif entrada == 'Rampa':
-            pwm_value= r[cont] # Entrada rampa
-        elif entrada == 'Random':
-            pwm_value= round(random.uniform(0,4),10) # Entrada random
-        else:
-            print("Entrada inválida.")
-            pwm_value = 0
         
-        ini = time.time()
-        serial_port.write(pwm_value)
-        angle = serial_port.read()
-        fin = time.time()
-        latencia = fin-ini
-        values = [latencia, pwm_value,angle]
-        print("\r\nLatencia: "latencia,"\r\nDatos recibidos: ", datos, "\r\nDatos tansmitidos: ", pwm_value)        
-        cont += 1 
+         #   pwm_value = step[cont] # Entrada escalón
+        
+         #   pwm_value= r[cont] # Entrada rampa
+        
+	
+       
+        
+        	ini = time.time()
+        	serial_port.write(pwm_value)
+        	angle = serial_port.read()
+        	fin = time.time()
+        	latencia = fin-ini
+        	values = [latencia, pwm_value,angle]
+        	print("\r\nLatencia: ", latencia,"\r\nDatos recibidos: ", datos, "\r\nDatos tansmitidos: ", pwm_value)        
+        	cont += 1 
 archivo_excel(values)
 serial_port.close()
 
