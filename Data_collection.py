@@ -13,43 +13,6 @@ import xlsxwriter
 import numpy as np
 import pandas as pd
 
-# Definicion del puerto
-serial_port = serial.Serial("/dev/ttyTHS2", 
-			baudrate=115200,
-			stopbits=serial.STOPBITS_ONE,
-			bytesize=serial.EIGHTBITS)
-
-time.sleep(0.02)
-
-serial_port.write('Demostracion de UART'.encode())
-serial_port.write('\r\nNVIDIA Jetson TX2\r\n'.encode())
-
-values = [[0,0,0]]
-cont = 0
-
-#while True:
-while cont <= 1000:
-        if serial_port.inWaiting() > 0:
-                pwm_value= str(round(random.uniform(0,4),10)).encode() # Entrada random
-                #pwm_value = step[cont] # Entrada escalón
-                #pwm_value= r[cont] # Entrada rampa
-                ini = time.time()
-                serial_port.write(str(pwm_value).encode())
-                angle = serial_port.read()
-                fin = time.time()
-                latencia = fin-ini
-                values = [latencia, pwm_value,angle]
-                print('Datos recibidos: ',float(angle))
-                print("\r\nLatencia: ", latencia,"\r\nDatos recibidos: ", datos, "\r\nDatos tansmitidos: ", pwm_value)        
-                cont += 1
-archivo_excel(values)
-serial_port.close()
-
-
-#star, end, sampling = -2,10,0.02
-#time = np.concatenate([np.arange(star,end,sampling), np.zeros(1000)])
-#Amplitude = round(random.uniform(0,4),4)
-
 
 # ********************************** Función Escalón **********************************#
 # Función escalón
@@ -77,3 +40,43 @@ def archivo_excel(values):
     archivo.close()
 
 # **********************************  **********************************#
+
+# Definicion del puerto
+serial_port = serial.Serial("/dev/ttyTHS2", 
+			baudrate=115200,
+			stopbits=serial.STOPBITS_ONE,
+			bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE)
+
+time.sleep(0.02)
+
+serial_port.write('Demostracion de UART'.encode())
+serial_port.write('\r\nNVIDIA Jetson TX2\r\n'.encode())
+
+values = [[0,0,0]]
+cont = 0
+
+#while True:
+while cont <= 10:
+        if serial_port.inWaiting() > 0:
+                pwm_value= str(round(random.uniform(0,4),10)).encode() # Entrada random
+                #pwm_value = step[cont] # Entrada escalón
+                #pwm_value= r[cont] # Entrada rampa
+                ini = time.time()
+                serial_port.write(str(pwm_value).encode())
+                angle = serial_port.read()
+                fin = time.time()
+                latencia = fin-ini
+                values.append([latencia, pwm_value,angle])
+                print('Datos recibidos: ',float(angle))
+                print("\r\nLatencia: ", latencia,"\r\nDatos recibidos: ", angle, "\r\nDatos tansmitidos: ", pwm_value)        
+                cont += 1
+archivo_excel(values)
+print('\r\nValores: ', values)
+serial_port.close()
+
+
+#star, end, sampling = -2,10,0.02
+#time = np.concatenate([np.arange(star,end,sampling), np.zeros(1000)])
+#Amplitude = round(random.uniform(0,4),4)
+
+
