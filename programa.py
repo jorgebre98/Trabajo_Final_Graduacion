@@ -1,20 +1,19 @@
+import time
 import serial
 import struct
 import random
-import time
-
+import xlsxwriter
 
 def Transmit_and_Receive(ser, num): # Serial port and float number
+        print('Float number: ', num)
         # float packed into bytes. The '!' ensures that it's in network byte order (big-endian).
         packed = struct.pack('!f', num)
-        #print ('Characters: %s' % repr(packed), flush = True)
         integers = [c for c in packed] # Each character correspond a interger.
-        #print ('Integers: %s' % integers, flush = True)
         binaries = [bin(i) for i in integers] # Convert to binary representation.
         stripped_binaries = [s.replace('0b', '') for s in binaries] # Strip off the '0b'.
         padded = [s.rjust(8, '0') for s in stripped_binaries] # Make sure all has 8 bits.
-        binario = ".join(padded)
-        print('\r\nCharacters:', packed, '\r\nIntergers: ', intergers,'\r\nBinary to transmit: ', binario, flush = True)
+        binary =''.join(padded)
+        print('Characters: %s' % repr(packed), '\Intergers: %s' % intergers, '\nBinary to transmit: ', binary, flush=True)
 
         print("\r\n**Transmitting**\r\n")
         start = time.time()
