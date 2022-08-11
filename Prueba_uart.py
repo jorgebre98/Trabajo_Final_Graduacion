@@ -18,7 +18,7 @@ time.sleep(1)
 try:
     # Send a simple header
     serial_port.write("UART Demonstration Program\r\n".encode())
-    serial_port.write("NVIDIA Jetson Nano Developer Kit\r\n".encode())
+    serial_port.write("NVIDIA Jetson TX2\r\n".encode())
     while True:
         if serial_port.inWaiting() > 0:
             data = serial_port.read()
