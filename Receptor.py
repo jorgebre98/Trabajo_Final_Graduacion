@@ -21,14 +21,12 @@ serial_port = serial.Serial("/dev/ttyUSB0",baudrate=115200,stopbits=serial.STOPB
 
 
 cont = 0
-#serial_port.open()
 while cont != 2:
 	data = serial_port.read(size=4)
 	data_2 = struct.unpack('!f', data)
 	print('Data receive: ', data)
-        print('Float Data Receive: ',data_2)
+	print('Float Data Receive: ',data_2)
 	val, data_t = binary(round(random.uniform(0,4),4))
-	#data_2 = float(data_2)	
-#	print(type(data_2))
 	serial_port.write(data_t)
 	cont += 1
+serial_port.close()

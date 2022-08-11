@@ -6,7 +6,7 @@ import xlsxwriter
 
 def Transmit_and_Receive(ser, num): # Serial port and float number
         print("**Transmitting**")
-	print('\nNumber to transmit: ', num)
+        print('\nNumber to transmit: ', num)
         packed = struct.pack('!f', num)# float packed into bytes. The '!' ensures that it's in network byte order (big-endian).
         integers = [c for c in packed] # Each character correspond a interger.
         binaries = [bin(i) for i in integers] # Convert to binary representation.
@@ -51,7 +51,7 @@ cont = 0
 while cont != 2:
         pwm_value = round(random.uniform(0,4),4)
         data_receive, latencia = Transmit_and_Receive (serial_port, pwm_value)
-	print(type(data_receive))
+        print(type(data_receive))
         #values = [[latencia, pwm_value, data_receive]]
         #archivo_excel(values)
         cont+=1
