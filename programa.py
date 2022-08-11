@@ -5,7 +5,7 @@ import random
 import xlsxwriter
 
 def Transmit_and_Receive(ser, num): # Serial port and float number
-        print('Float number: ', num)
+        print('\nFloat number: ', num)
         # float packed into bytes. The '!' ensures that it's in network byte order (big-endian).
         packed = struct.pack('!f', num)
         integers = [c for c in packed] # Each character correspond a interger.
@@ -15,7 +15,7 @@ def Transmit_and_Receive(ser, num): # Serial port and float number
         binary =''.join(padded)
         print('Characters: %s' % repr(packed), '\Intergers: %s' % integers, '\nBinary to transmit: ', binary, flush=True)
 
-        print("\r\n**Transmitting**\r\n")
+        print("**Transmitting**")
         start = time.time()
         for b in packed:
                 ser.write(b)
@@ -58,4 +58,4 @@ while cont != 2:
         #archivo_excel(values)
         cont+=1
 
-ser.close()
+serial_port.close()
