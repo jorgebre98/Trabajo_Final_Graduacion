@@ -5,8 +5,8 @@ import random
 import xlsxwriter
 
 def Transmit_and_Receive(ser, num): # Serial port and float number
-        print("**Transmitting**")
-        print('\nNumber to transmit: ', num)
+        print("\n**Transmitting**")
+        print('Number to transmit: ', num)
         packed = struct.pack('!f', num)# float packed into bytes. The '!' ensures that it's in network byte order (big-endian).
         integers = [c for c in packed] # Each character correspond a interger.
         binaries = [bin(i) for i in integers] # Convert to binary representation.
@@ -22,8 +22,8 @@ def Transmit_and_Receive(ser, num): # Serial port and float number
         latencia = time.time() - start
         data = struct.unpack('!f', data_receive) # Convert bytes to float
         print('Data Receive:',data_receive)
-        print('Float Data Receive: ', data)
-        return data, latencia
+        print('Float Data Receive: ', data[0])
+        return data[0], latencia
 
 def archivo_excel(values):
     archive = xlsxwriter.Workbook("Data_collection.xlsx")
@@ -47,13 +47,14 @@ serial_port = serial.Serial("/dev/ttyTHS2",
 
 #serial_port.open()
 cont = 0
+values = [[0,0,0]]
 
-while cont != 2:
+while cont != 200:
         pwm_value = round(random.uniform(0,4),4)
         data_receive, latencia = Transmit_and_Receive (serial_port, pwm_value)
-        print(type(data_receive))
-        #values = [[latencia, pwm_value, data_receive]]
-        #archivo_excel(values)
+        #print(type(data_receive)) Es una tupla
+        values.append([latencia, pwm_value, data_receive])
         cont+=1
 
+archivo_excel(values)
 serial_port.close()
