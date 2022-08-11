@@ -52,10 +52,10 @@ cont = 0
 
 while cont != 2:
         pwm_value = 3.2
-        #value = random.uniform(0,4)
+        #value = round(random.uniform(0,4),4)
         data_receive, latencia = Transmit_and_Receive (serial_port, pwm_value)
         #values = [[latencia, pwm_value, data_receive]]
         #archivo_excel(values)
-	cont+=1
+        cont+=1
 
 ser.close()
