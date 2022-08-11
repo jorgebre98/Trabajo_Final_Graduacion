@@ -17,8 +17,9 @@ def Transmit_and_Receive(ser, num): # Serial port and float number
 
         print("**Transmitting**")
         start = time.time()
-        for b in packed:
-                ser.write(b)
+	ser.write(packed)
+        #for b in packed:
+         #       ser.write(b)
         print('**Transmission Finished**')
         print('**Receiving**')
         data_receive = ser.read(4)
