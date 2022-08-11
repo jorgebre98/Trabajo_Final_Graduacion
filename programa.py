@@ -13,20 +13,19 @@ def Transmit_and_Receive(ser, num): # Serial port and float number
         stripped_binaries = [s.replace('0b', '') for s in binaries] # Strip off the '0b'.
         padded = [s.rjust(8, '0') for s in stripped_binaries] # Make sure all has 8 bits.
         binary =''.join(padded)
-        print('Characters: %s' % repr(packed), '\Intergers: %s' % intergers, '\nBinary to transmit: ', binary, flush=True)
+        print('Characters: %s' % repr(packed), '\Intergers: %s' % integers, '\nBinary to transmit: ', binary, flush=True)
 
         print("\r\n**Transmitting**\r\n")
         start = time.time()
         for b in packed:
                 ser.write(b)
         print('**Transmission Finished**')
-        
         print('**Receiving**')
         data_receive = ser.read(4)
         latencia = time.time() - start
-        data = data.unpack('!f', data) # Convert bytes to float
+        data = struct.unpack('!f', data_receive) # Convert bytes to float
         print('Data Receive: ', data)
-        return data_receive, latencia
+        return data, latencia
 
 def archivo_excel(values):
     archive = xlsxwriter.Workbook("Data_collection.xlsx")
@@ -48,13 +47,15 @@ serial_port = serial.Serial("/dev/ttyTHS2",
                     bytesize=serial.EIGHTBITS,
                     parity=serial.PARITY_NONE)
 
-serial_port.open()
+#serial_port.open()
 cont = 0
 
-while cont <= 20:
+while cont != 2:
         pwm_value = 3.2
         #value = random.uniform(0,4)
         data_receive, latencia = Transmit_and_Receive (serial_port, pwm_value)
-        values = [[latencia, pwm_value, data_receive]]
-        archivo_excel(values)
+        #values = [[latencia, pwm_value, data_receive]]
+        #archivo_excel(values)
+	cont+=1
+
 ser.close()
