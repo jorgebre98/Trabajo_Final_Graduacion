@@ -40,10 +40,11 @@ def archivo_excel(values):
 # ************************* Data Transmission and Reception *************************#
 
 # Definicion del puerto
-serial_port = serial.Serial("/dev/ttyTHS2", 
-			baudrate=115200,
-			stopbits=serial.STOPBITS_ONE,
-			bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE)
+serial_port = serial.Serial("/dev/ttyTHS2",
+                            baudrate=115200,
+                            stopbits=serial.STOPBITS_ONE,
+                            bytesize=serial.EIGHTBITS,
+                            parity=serial.PARITY_NONE)
 
 time.sleep(0.02)
 
