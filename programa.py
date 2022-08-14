@@ -31,7 +31,7 @@ def archivo_excel(values):
     names = ['Latencia','Entrada','Ángulo']
     for j in range(len(names)):
         hoja.write(0,j,names[j])
-
+        
     for j in range(len(values)):
         for i in range(len(values[j])):
             hoja.write(j+1,i,values[j][i]) # row, col, data
@@ -40,12 +40,10 @@ def archivo_excel(values):
 
 # Port definition
 serial_port = serial.Serial("/dev/ttyTHS2",
-                    baudrate=115200,
-                    stopbits=serial.STOPBITS_ONE,
-                    bytesize=serial.EIGHTBITS,
-                    parity=serial.PARITY_NONE)
+                            baudrate=115200,
+                            stopbits=serial.STOPBITS_ONE,
+                            bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE)
 
-#serial_port.open()
 cont = 0
 values = [[0,0,0]]
 
@@ -58,3 +56,7 @@ while cont != 200:
 
 archivo_excel(values)
 serial_port.close()
+
+
+
+
