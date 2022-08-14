@@ -1,17 +1,18 @@
 ## Tecnológico de Costa Rica
 ### Autor: Jorge Andrés Brenes Alfaro
-## Comunicación UART
+## Data_collection.py
 
-# El código desarrollado a continuación permite la comunicación de una tajeta
-# NVIDIA Jetson TX 2 con un PSoC con el fin de enviar datos para controlar
-# una planta de péndulo amortiguado a hélice (PAHM).
+# The code presented allows an NVIDIA Jetson TX2 communicate with a PSoC 
+# with the purpose of collect data from a Péndulo amortiguado a hélice (PAHM) plant.
 
+#Libraries
 import time
 import serial
+import struct
 import random
 import xlsxwriter
 import numpy as np
-
+from timer import RepeatedTimer
 
 # ********************************** Step Function **********************************#
 def step_function(A,t):
@@ -36,10 +37,23 @@ def archivo_excel(values):
             hoja.write(j+1,i,values[j][i]) # row, col, data
     archive.close()
 
+# ********************************** Data Transmission and Reception **********************************#
+def Transmit_Receive(port,num):
+    packed = struct.pack('f',num)
+    ini = time.time()
+    port.write(packed)
+    data = port.read(size=4)
+    latencia = time.time()-ini
+    data_r = struct.unpack('f',data)
+    return data_r[0], latencia
 
-# ************************* Data Transmission and Reception *************************#
+def Data_collect(ser):
+    pwm_value = round(random.uniform(0,4),4)
+    data_receive, latencia = Transmit_Receive(ser, pwm_value)
+    return  pwm_value,data_receive,latencia
+    
 
-# Definicion del puerto
+# ****** ***** Definicion del puerto ****** *******
 serial_port = serial.Serial("/dev/ttyTHS2",
                             baudrate=115200,
                             stopbits=serial.STOPBITS_ONE,
@@ -48,40 +62,21 @@ serial_port = serial.Serial("/dev/ttyTHS2",
 
 time.sleep(0.02)
 
-serial_port.write('Demostracion de UART'.encode())
-serial_port.write('\r\nNVIDIA Jetson TX2\r\n'.encode())
-
 
 star, end, sampling = -2,10,0.02
 tiempo = np.concatenate([np.arange(star,end,sampling), np.zeros(1000)])
 Amplitude = round(random.uniform(0,4),4)
 step = step_function(Amplitude,tiempo)
 r = ramp_function(Amplitude,tiempo)
-print('\r\nAmplitud: ',Amplitude,'\r\n')
+#print('\r\nAmplitud: ',Amplitude,'\r\n', flush = True)
 
-values = [[0,0,0]]
-cont = 0
-
-#while True:
-while cont <= 500:
-        if serial_port.inWaiting() > 0:
-                #pwm_value= str(round(random.uniform(0,4),10)).encode() # Entrada random
-                pwm_value = step[cont] # Entrada escalón
-                #pwm_value= r[cont] # Entrada rampa
-                ini = time.time()
-                serial_port.write(str(pwm_value).encode())
-                angle = serial_port.read()
-                fin = time.time()
-                latencia = fin-ini
-                values.append([latencia, pwm_value,angle])
-                #print('Datos recibidos: ',float(angle))
-                print("\r\nLatencia: ", latencia,"\r\nDatos recibidos: ", angle, "\r\nDatos tansmitidos: ", pwm_value)        
-                cont += 1
-archivo_excel(values)
-print('\r\nValores: ', values)
+values = [[0,0,0]] # save values in a list to create .xlsx archive
+print('************ Starting *************', flush=True)
+pwm_value,data_receive,latencia = RepeatedTimer(0.02, Data_collect, serial_port) # No need of rt.start()
+try:
+    values.append([pwm_value,data_receive,latencia])
+    time.sleep(0.2) # long running job
+finally:
+    rt.stop()
+    archivo_excel(values)
 serial_port.close()
-
-
-
-
-
