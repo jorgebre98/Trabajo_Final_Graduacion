@@ -74,7 +74,7 @@ time.sleep(0.02)
 print('************ Starting *************', flush=True)
 rt = RepeatedTimer(0.02, Data_collect, serial_port) # No need of rt.start()
 try:
-    time.sleep(10) # long running job
+    time.sleep(1) # long running job
 finally:
     rt.stop()
     archivo_excel(rt.values)
