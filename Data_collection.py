@@ -12,7 +12,38 @@ import struct
 import random
 import xlsxwriter
 import numpy as np
-from timer import RepeatedTimer
+#from Timer import RepeatedTimer
+
+import threading 
+import time
+
+class RepeatedTimer(object):
+    def __init__(self, interval, function, *args, **kwargs):
+        self._timer = None
+        self.interval = interval
+        self.function = function
+        self.args = args
+        self.kwargs = kwargs
+        self.values = []
+        self.is_running = False
+        self.next_call = time.time()
+        self.start()
+
+    def _run(self):
+        self.is_running = False
+        self.start()
+        self.values.append(self.function(*self.args, **self.kwargs))
+
+    def start(self):
+        if not self.is_running:
+            self.next_call += self.interval
+            self._timer = threading.Timer(self.next_call - time.time(), self._run)
+            self._timer.start()
+            self.is_running = True
+
+    def stop(self):
+        self._timer.cancel()
+        self.is_running = False
 
 # ********************************** Step Function **********************************#
 def step_function(A,t):
@@ -50,7 +81,8 @@ def Transmit_Receive(port,num):
 def Data_collect(ser):
     pwm_value = round(random.uniform(0,4),4)
     data_receive, latencia = Transmit_Receive(ser, pwm_value)
-    return  pwm_value,data_receive,latencia
+    print('\nData_transmit: ', pwm_value,'\nData receive: ',data_receive,flush=True)
+    return  [latencia,pwm_value,data_receive]
     
 
 # ****** ***** Definicion del puerto ****** *******
@@ -59,24 +91,22 @@ serial_port = serial.Serial("/dev/ttyTHS2",
                             stopbits=serial.STOPBITS_ONE,
                             bytesize=serial.EIGHTBITS,
                             parity=serial.PARITY_NONE)
-
 time.sleep(0.02)
 
 
-star, end, sampling = -2,10,0.02
-tiempo = np.concatenate([np.arange(star,end,sampling), np.zeros(1000)])
-Amplitude = round(random.uniform(0,4),4)
-step = step_function(Amplitude,tiempo)
-r = ramp_function(Amplitude,tiempo)
+#star, end, sampling = -2,10,0.02
+#tiempo = np.concatenate([np.arange(star,end,sampling), np.zeros(1000)])
+#Amplitude = round(random.uniform(0,4),4)
+#step = step_function(Amplitude,tiempo)
+#r = ramp_function(Amplitude,tiempo)
 #print('\r\nAmplitud: ',Amplitude,'\r\n', flush = True)
 
-values = [[0,0,0]] # save values in a list to create .xlsx archive
+
 print('************ Starting *************', flush=True)
-pwm_value,data_receive,latencia = RepeatedTimer(0.02, Data_collect, serial_port) # No need of rt.start()
+rt = RepeatedTimer(0.02, Data_collect, serial_port) # No need of rt.start()
 try:
-    values.append([pwm_value,data_receive,latencia])
-    time.sleep(0.2) # long running job
+    time.sleep(10) # long running job
 finally:
     rt.stop()
-    archivo_excel(values)
+    archivo_excel(rt.values)
 serial_port.close()
