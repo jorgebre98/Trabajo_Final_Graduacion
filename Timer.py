@@ -29,16 +29,3 @@ class RepeatedTimer(object):
     def stop(self):
         self._timer.cancel()
         self.is_running = False
-
-# ********************Example ********************#
-def hello(name):
-    print ("Hello %s!" % name)
-    return 2
- 
-print ("starting...")
-rt = RepeatedTimer(0.02, hello, 1) # it auto-starts, no need of rt.start()
-try:
-    time.sleep(0.09) # your long-running job goes here...
-finally:
-    rt.stop() # better in a try/finally block to make sure the program ends!
-    print(rt.values)
