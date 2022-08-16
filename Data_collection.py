@@ -12,38 +12,7 @@ import struct
 import random
 import xlsxwriter
 import numpy as np
-#from Timer import RepeatedTimer
-
-import threading 
-import time
-
-class RepeatedTimer(object):
-    def __init__(self, interval, function, *args, **kwargs):
-        self._timer = None
-        self.interval = interval
-        self.function = function
-        self.args = args
-        self.kwargs = kwargs
-        self.values = []
-        self.is_running = False
-        self.next_call = time.time()
-        self.start()
-
-    def _run(self):
-        self.is_running = False
-        self.start()
-        self.values.append(self.function(*self.args, **self.kwargs))
-
-    def start(self):
-        if not self.is_running:
-            self.next_call += self.interval
-            self._timer = threading.Timer(self.next_call - time.time(), self._run)
-            self._timer.start()
-            self.is_running = True
-
-    def stop(self):
-        self._timer.cancel()
-        self.is_running = False
+from Timer import *
 
 # ********************************** Step Function **********************************#
 def step_function(A,t):
