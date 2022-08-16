@@ -9,6 +9,7 @@ class RepeatedTimer(object):
         self.function = function
         self.args = args
         self.kwargs = kwargs
+        self.values = []
         self.is_running = False
         self.next_call = time.time()
         self.start()
@@ -16,7 +17,7 @@ class RepeatedTimer(object):
     def _run(self):
         self.is_running = False
         self.start()
-        self.function(*self.args, **self.kwargs)
+        self.values.append(self.function(*self.args, **self.kwargs))
 
     def start(self):
         if not self.is_running:
@@ -30,12 +31,14 @@ class RepeatedTimer(object):
         self.is_running = False
 
 # ********************Example ********************#
-#def hello(name):
- #   print ("Hello %s!" % name)
+def hello(name):
+    print ("Hello %s!" % name)
+    return 2
  
-#print ("starting...")
-#rt = RepeatedTimer(0.02, hello, "World") # it auto-starts, no need of rt.start()
-#try:
- #   time.sleep(1) # your long-running job goes here...
-#finally:
-#    rt.stop() # better in a try/finally block to make sure the program ends!
+print ("starting...")
+rt = RepeatedTimer(0.02, hello, 1) # it auto-starts, no need of rt.start()
+try:
+    time.sleep(0.09) # your long-running job goes here...
+finally:
+    rt.stop() # better in a try/finally block to make sure the program ends!
+    print(rt.values)
