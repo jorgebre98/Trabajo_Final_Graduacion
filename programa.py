@@ -3,7 +3,7 @@ import serial
 import struct
 import random
 import xlsxwriter
-
+'''
 def Transmit_and_Receive(ser, num): # Serial port and float number
         print("\n**Transmitting**")
         print('Number to transmit: ', num)
@@ -36,7 +36,16 @@ def archivo_excel(values):
         for i in range(len(values[j])):
             hoja.write(j+1,i,values[j][i]) # row, col, data
     archive.close()
+'''
 
+def transmit(ser, num):
+        packed = struct.pack("<i", num)
+        print('Transmitting: ', packed, flush=True)
+        ser.write(num)
+
+def receive(ser, packed):
+        val = struct.unpack("<i",packed)
+        
 
 # Port definition
 serial_port = serial.Serial("/dev/ttyTHS2",
@@ -44,17 +53,25 @@ serial_port = serial.Serial("/dev/ttyTHS2",
                             stopbits=serial.STOPBITS_ONE,
                             bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE)
 
-cont = 0
-values = [[0,0,0]]
+#cont = 0
+#values = [[0,0,0]]
+# PRUEBA 1
+while True:
+        
+        
 
-while cont != 200:
-        pwm_value = round(random.uniform(0,4),4)
-        data_receive, latencia = Transmit_and_Receive (serial_port, pwm_value)
-        #print(type(data_receive)) Es una tupla
-        values.append([latencia, pwm_value, data_receive])
-        cont+=1
-
-archivo_excel(values)
+# PRUEBA 2
+'''
+while True:
+        pwm_value = int(125+random.uniform(0,4)*125)
+        transmit(serial_port, pwm_value)
+        data = serial_port.read(4)
+        print('Data: ', data, flush=True)
+        '''
+        #data_receive, latencia = Transmit_and_Receive (serial_port, pwm_value)
+        #values.append([latencia, pwm_value, data_receive])
+        #cont+=1
+        
 serial_port.close()
 
 
