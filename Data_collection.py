@@ -39,16 +39,17 @@ def archivo_excel(values):
 
 # ********************************** Data Transmission and Reception **********************************#
 def Transmit_Receive(port,num):
-    packed = struct.pack('f',num)
+    packed = struct.pack('<f',num)
     ini = time.time()
-    port.write(packed)
     data = port.read(size=4)
+    port.write(packed)
     latencia = time.time()-ini
-    data_r = struct.unpack('f',data)
+    data_r = struct.unpack('<f',data)
     return data_r[0], latencia
 
 def Data_collect(ser):
     pwm_value = round(random.uniform(0,4),4)
+    pwm_value = 125+pwm_value/4*125
     data_receive, latencia = Transmit_Receive(ser, pwm_value)
     print('\nData_transmit: ', pwm_value,'\nData receive: ',data_receive,flush=True)
     return  [latencia,pwm_value,data_receive]
@@ -60,7 +61,7 @@ serial_port = serial.Serial("/dev/ttyTHS2",
                             stopbits=serial.STOPBITS_ONE,
                             bytesize=serial.EIGHTBITS,
                             parity=serial.PARITY_NONE)
-time.sleep(0.02)
+time.sleep(1)
 
 
 #star, end, sampling = -2,10,0.02
@@ -70,11 +71,13 @@ time.sleep(0.02)
 #r = ramp_function(Amplitude,tiempo)
 #print('\r\nAmplitud: ',Amplitude,'\r\n', flush = True)
 
-
 print('************ Starting *************', flush=True)
+serial_port.reset_input_buffer()
+serial_port.reset_output_buffer()
+
 rt = RepeatedTimer(0.02, Data_collect, serial_port) # No need of rt.start()
 try:
-    time.sleep(20) # long running job
+    time.sleep(0.4) # long running job
 finally:
     rt.stop()
     archivo_excel(rt.values)
