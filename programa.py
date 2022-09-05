@@ -2,7 +2,6 @@ import time
 import serial
 import struct
 import random
-import xlsxwriter    
 
 # Port definition
 serial_port = serial.Serial("/dev/ttyTHS2",baudrate=115200,stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE)
