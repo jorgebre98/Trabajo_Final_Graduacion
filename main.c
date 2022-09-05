@@ -12,7 +12,7 @@
 #include "stdio.h"
 #include <stdbool.h>
 
-int pwm_value; // Valor recibido para escribir en el PWM.
+uint8 pwm_value; // Valor recibido para escribir en el PWM.
 int angle_Quad; // Lectura del decodificador de cuadratura.
 bool runcode = false; // Para iniciar/detener el proceso dentro de la interrupción se puede activar/apagar desde el switch principal (case)
 
@@ -41,16 +41,24 @@ int main(void)
     UART_1_ClearTxBuffer();
     
     int32 entero;
+    int8 aux;
     uint8* arr = &entero;
+    int angle = 0, prev = 0;
+    runcode = true;
     
     for (;;){
-        runcode = true;
         pwm_value = UART_1_ReadRxData();
-        for (int cont=0;cont<4;cont++){
-            arr[cont] = angle_Quad;
-        }
+        entero = angle_Quad;
+        
+        aux = arr[3];
+        arr[3] = arr[0];
+        arr[0] = aux;
+        
+        aux = arr[1];
+        arr[1] = arr[2];
+        arr[2] = aux;
+        
         UART_1_PutArray((uint8*)arr,4);
-        //UART_1_PutArray((uint8*)angle_Quad,4);
         CyDelay(20);
     }
 }
