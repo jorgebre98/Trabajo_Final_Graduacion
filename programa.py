@@ -17,7 +17,7 @@ try:
 			serial_port.write(packed)
 			receive = serial_port.read(4)
 			data = struct.unpack('!i',receive)
-			print('Dato Transmitido: {0} y Dato recibido: {1}.'.format(contador,data[0]))
+			print('Dato Transmitido: {0} y Dato recibido: {1}'.format(contador,data[0]/4))
 except KeyboardInterrupt:
     print("Exiting Program")
 
