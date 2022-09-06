@@ -11,13 +11,13 @@ serial_port.reset_input_buffer()
 serial_port.reset_output_buffer()
 try:
 	while True:
-		contador = random.randint(125,250)
+		contador = 175#125+(random.randint(0,4)/4)*125 #int(input('PWM: '))
 		if serial_port.inWaiting() > 0:
-			packed = struct.pack('!i',contador)
+			packed = struct.pack('!f',contador)
 			serial_port.write(packed)
 			receive = serial_port.read(4)
 			data = struct.unpack('!i',receive)
-			print('Dato Transmitido: {0} y Dato recibido: {1}'.format(contador,data[0]/4))
+			print('Dato Transmitido: {0} y Dato recibido: {1}'.format(contador,data[0]))
 except KeyboardInterrupt:
     print("Exiting Program")
 
