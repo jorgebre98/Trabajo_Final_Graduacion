@@ -14,6 +14,8 @@ import xlsxwriter
 import numpy as np
 from Timer import *
 
+contador = 0
+
 # ********************************** Step Function **********************************#
 def step_function(A,t):
     u = (t >= 0)*A
@@ -47,14 +49,16 @@ def Transmit_Receive(port,num):
 		data = port.read(size=4)
 		latencia = time.time()-ini
 		data_r = struct.unpack('!i',data)
-	return data_r[0],latencia
+	return data_r[0], latencia
 
 def Data_collect(ser):
-    pwm_value = round(random.uniform(0,4),4)
-    pwm_value = 125+int(pwm_value/4*125)
-    data_receive, latencia = Transmit_Receive(ser, pwm_value)
-    print('\nData_transmit: ', pwm_value,'\nData receive: ',data_receive,flush=True)
-    return  [latencia,pwm_value,data_receive]
+	global contador
+	if (contador <= 140):
+		pwm_value = contador
+	contador = contador + 1
+	data_receive, latencia = Transmit_Receive(ser, pwm_value)
+	print('\nData_transmit: ', pwm_value,'\nData receive: ',data_receive,flush=True)
+	return  [latencia,pwm_value,data_receive]
     
 
 # ****** ***** Definicion del puerto ****** *******
@@ -79,7 +83,7 @@ serial_port.reset_output_buffer()
 
 rt = RepeatedTimer(0.02, Data_collect, serial_port) # No need of rt.start()
 try:
-    time.sleep(20) # long running job
+    time.sleep(5) # long running job
 
 except KeyboardInterrupt:
     print("Exiting Program")
