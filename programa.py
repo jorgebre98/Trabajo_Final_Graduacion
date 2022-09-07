@@ -11,9 +11,9 @@ serial_port.reset_input_buffer()
 serial_port.reset_output_buffer()
 try:
 	while True:
-		contador = 175#125+(random.randint(0,4)/4)*125 #int(input('PWM: '))
+		contador = 280#125+(random.randint(0,4)/4)*125 #int(input('PWM: '))
 		if serial_port.inWaiting() > 0:
-			packed = struct.pack('!f',contador)
+			packed = struct.pack('!i',contador)
 			serial_port.write(packed)
 			receive = serial_port.read(4)
 			data = struct.unpack('!i',receive)
