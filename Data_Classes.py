@@ -3,9 +3,11 @@
 ## Data_collection.py
 
 #********** Libraries **********#
+import csv
 import time
 import serial
 import random
+import keyboard
 import threading 
 import numpy as np
 from struct import pack, unpack
@@ -28,8 +30,9 @@ class TransmitReceive:
             self.port.write(packed)
             data = self.port.read(size=4)
             self.latency = time.time()-ini
-            self.angle = struct.unpack('!i',data)
-            self.values.append([self.latency, self.pwm, self.angle])
+            self.angle = unpack('!i',data)
+            self.values.append([self.latency, self.pwm, self.angle[0]])
+            #print('Transmit: {0} and Receive: {1}'.format(self.pwm,self.angle[0]))
 
     def reset(self):
         self.port.reset_input_buffer()
@@ -42,12 +45,15 @@ class TransmitReceive:
 
     def create_pwm(self):
         #self.pwm = 125+int(random.uniform(0,4)/4*125)
-        if contrador <= 150:
-            contador +=1
+        if self.contador <= 145:
+            self.contador +=1
+            self.pwm = self.contador
 
     def turn_off(self):
-        self.contador = -1
-        self.Transmit_Receive()
+		self.pwm = 0
+		self.port.write(pack('!i',self.pwm))
+        #self.contador = -1
+        #self.Transmit_Receive()
         self.port.close()
 
 # ********************************** Input Class **********************************# 
@@ -74,6 +80,7 @@ class Inputs:
         elif keyboard.read_key() == 'd' or keyboard.read_key() == 'D':
             self.contador -= 5
             print('Valor del contador: ', contador, flush = True)
+        TransmitReceive.pwm = contador
 
 
 # ********************************** Timer Class **********************************#
