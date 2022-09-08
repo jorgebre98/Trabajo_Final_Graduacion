@@ -23,7 +23,7 @@ print('************ Data_Recolecting *************', flush=True)
 
 rt = RepeatedTimer(0.02, uart.Transmit_Receive) # No need of rt.start()
 try:
-    time.sleep(2) # long running job
+    time.sleep(5) # long running job
 
 except KeyboardInterrupt:
     print("Exiting Program")
