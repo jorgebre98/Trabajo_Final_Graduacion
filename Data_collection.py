@@ -8,7 +8,6 @@ serial_port  = serial.Serial("/dev/ttyTH2", baudrate = 115200,
 
 time.sleep(0.5) #Dar tiempo para asignación de pines
 
-
 uart = TransmitReceive(serial_port)
 
 print('************ Starting *************', flush=True)
@@ -17,7 +16,7 @@ uart.reset()
 
 rt = RepeatedTimer(0.02, uart.Transmit_Receive) # No need of rt.start()
 try:
-    time.sleep(20) # long running job
+    time.sleep(10) # long running job
 
 except KeyboardInterrupt:
     print("Exiting Program")
