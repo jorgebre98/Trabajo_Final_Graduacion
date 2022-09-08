@@ -28,6 +28,7 @@ try:
 except KeyboardInterrupt:
     print("Exiting Program")
     uart.reset()
+    uart.turn_off()
     serial_port.close()
 
 except Exception as exception_error:
