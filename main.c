@@ -12,7 +12,7 @@
 #include "stdio.h"
 #include <stdbool.h>
 
-uint8 pwm_value; // Receive value to write on PWM.
+uint16 pwm_value; // Receive value to write on PWM.
 int angle_Quad; // Reading the quadrature decoder.
 bool runcode = false; // To start/stop the process into the interrupt. It can be turn on/off in the principal switch(case).
 
@@ -44,12 +44,21 @@ int main(void)
     //**** AUXILIARY VARIABLES ****/
     int32 entero;
     int8 aux; 
-    uint8* arr = &entero;
+    uint8* arr = (uint8*)&entero;
+    uint16 lsb,msb;    
+    
     
     runcode = true; // Start the interrupts.
     
     for (;;){
-        pwm_value = UART_1_ReadRxData(); //Read serial port.
+        // Receive a 2-byte data for the pwm
+        msb = UART_1_ReadRxData(); //Read serial port.
+        lsb = UART_1_ReadRxData();
+        pwm_value = lsb + (msb << 8);
+        
+        // Send the angular value
+        
+        //entero = pwm_value;
         entero = angle_Quad; // Asign the quad_dec value.
         
         /**** REORDER THE BYTES TO TRASNMIT ****/
