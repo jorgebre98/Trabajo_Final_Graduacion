@@ -20,7 +20,7 @@ class TransmitReceive:
         self.angle = None
         self.lantency = None
         self.contador = 0
-        self.values = []
+        self.values = [["LATENCY","PWM_VALUE","ANGLE"]]
 
     def Transmit_Receive (self):
         self.create_pwm()
@@ -45,16 +45,13 @@ class TransmitReceive:
 
     def create_pwm(self):
         #self.pwm = 125+int(random.uniform(0,4)/4*125)
-        if self.contador <= 145:
+        if self.contador <= 185:
             self.contador +=1
             self.pwm = self.contador
 
     def turn_off(self):
         self.pwm = 0
         self.port.write(pack('!i',self.pwm))
-        #self.contador = -1
-        #self.Transmit_Receive()
-        self.port.close()
 
 # ********************************** Input Class **********************************# 
 class Inputs:
