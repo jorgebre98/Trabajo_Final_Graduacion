@@ -23,19 +23,18 @@ print('************ Data_Recolecting *************', flush=True)
 
 rt = RepeatedTimer(0.02, uart.Transmit_Receive) # No need of rt.start()
 try:
-    time.sleep(5) # long running job
+    time.sleep(45) # long running job
 
 except KeyboardInterrupt:
     print("Exiting Program")
     uart.reset()
     uart.turn_off()
-    serial_port.close()
 
 except Exception as exception_error:
     print("Error occurred.")
     print("Error: " + str(exception_error))
     uart.reset()
-    serial_port.close()
+    uart.turn_off()
     
 
 finally:
