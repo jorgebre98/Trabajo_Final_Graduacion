@@ -23,11 +23,14 @@ class TransmitReceive:
         self.values = [["LATENCY","PWM_VALUE","ANGLE"]]
 
     def Transmit_Receive (self):
-        self.create_pwm()
+        self.pwm_ramp_step()
         if self.port.inWaiting() > 0:
-            packed = pack('!i',self.pwm)
+            # Send 2 bytes
+            packed = pack('!h',self.pwm)
             ini = time.time()
             self.port.write(packed)
+            
+            # Receive 4 bytes
             data = self.port.read(size=4)
             self.latency = time.time()-ini
             self.angle = unpack('!i',data)
@@ -43,11 +46,19 @@ class TransmitReceive:
             doc = csv.writer(file, delimiter=',')
             doc.writerows(self.values)
 
-    def create_pwm(self):
+    def pwm_ramp_step(self):
         #self.pwm = 125+int(random.uniform(0,4)/4*125)
-        if self.contador <= 185:
+        #if self.contador <= 500:
+        #    self.contador +=1
+        #    self.pwm = self.contador
+         
+        if self.contador <= 350:
             self.contador +=1
-            self.pwm = self.contador
+        #else:
+            #self.contador = 0
+        self.pwm = self.contador
+         
+
 
     def turn_off(self):
         self.pwm = 0
