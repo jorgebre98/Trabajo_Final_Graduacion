@@ -1,11 +1,18 @@
 /* ========================================
  *
  * Copyright Jorge Brenes Alfaro, 2022
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
+ * EL5617 Trabajo Final de Graduación.
+ * Escuela de Ingeniería Electrónica.
+ * Tecnológico de Costa Rica.
+
+ * UART COMUNICATION FROM THE PSOC TO THE JETSON TX2 AND VICE VERSA
  *
- * UART COMUNICATION
- *
+ * This file is responsible for communication between the PSOC and 
+ * the Jetson TX 2. Where the Jetson TX2 sends a 2 bytes data 
+ * corresponding to the PWM value. The PSoC transmits this value 
+ * to the PAHM and obtains an angle via the quadrature decoder, 
+ * which angle will be transmitted to the jetson tx2 in 4 bytes.
+ * 
  * ========================================
 */
 #include <project.h>
@@ -20,7 +27,7 @@ CY_ISR_PROTO(isr_Control_Handler);
 CY_ISR(isr_Control_Handler){
     if (runcode == true){
         CyPins_SetPin(LED_EJECUCION_0); // Turns on at interrupt start (Active low)
-        PWM_1_WriteCompare(pwm_value); // Write the pwm's value.
+        PWM_1_WriteCompare(pwm_value); // Write the PWM value.
         angle_Quad = QuadDec_1_GetCounter(); // Read the decoder's value.
         CyPins_ClearPin(LED_EJECUCION_0); // Turns off at interrupt stop.
     }
@@ -42,24 +49,22 @@ int main(void)
     UART_1_ClearTxBuffer(); 
     
     //**** AUXILIARY VARIABLES ****/
-    int32 entero;
+    int32 val;
     int8 aux; 
-    uint8* arr = (uint8*)&entero;
-    uint16 lsb,msb;    
+    uint8* arr = (uint8*)&val;
+    uint16 lsb,msb;
     
     
     runcode = true; // Start the interrupts.
     
     for (;;){
-        // Receive a 2-byte data for the pwm
-        msb = UART_1_ReadRxData(); //Read serial port.
-        lsb = UART_1_ReadRxData();
-        pwm_value = lsb + (msb << 8);
+        // Receive a 2-byte data for the PWM
+        msb = UART_1_ReadRxData(); // Read most significant bit from the serial port.
+        lsb = UART_1_ReadRxData(); // Read lowest significant bit from the serial port.
+        pwm_value = lsb + (msb << 8); // PWM value (2 bytes).
         
         // Send the angular value
-        
-        //entero = pwm_value;
-        entero = angle_Quad; // Asign the quad_dec value.
+        val = angle_Quad; // Asign the quad_dec value.
         
         /**** REORDER THE BYTES TO TRASNMIT ****/
         aux = arr[3];
