@@ -5,12 +5,11 @@
 
 #   This file is responsible for getting data from the PAHM. To do this, this file makes use of
 #   the TransmitReceive, Timer and Inputs classes, which are in their respective file.
-
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
 from Timer import *
-from  Inputs_Set import *
 from Transmit_and_Receive import *
 
 #   Port serial definition.
@@ -21,20 +20,32 @@ serial_port  = serial.Serial("/dev/ttyTHS2", baudrate = 115200,
 
 time.sleep(0.5) #   Time for pin assignment
 
-run_time = 30 #     Time for long running job
-start, sampling, end = -2, 0.02, span/sampling #    Start time, sampling period and ent time
-tiempo = np.arange(start, end, samplig)
-
-PAHM = TransmitReceive(serial_port, tiempo)
+PAHM = TransmitReceive(serial_port)
 
 print('************ Starting *************', flush=True)
 PAHM.reset()
 print('Data_Recolecting .....', flush=True)
 
-rt = RepeatedTimer(0.02, uart.Transmit_Receive) # No need of rt.start()
+rt = RepeatedTimer(0.02, PAHM.Transmit_Receive) # No need of rt.start()
+
+#try:
+#    time.sleep(5) # long running job
+
+def comando(valor):
+    PAHM.pwm_setvalue(valor)
+
+
 
 try:
-    time.sleep(30) # long running job
+    master = tkinter.Tk()
+    w = tkinter.Scale(master, from_=0, to=2000, orient=tkinter.HORIZONTAL,length=400,command=comando)
+    w.pack()
+    tkinter.mainloop()
+    print("Saliendo...")
+    PAHM.pwm_setvalue(0)
+    if len(sys.argv) > 1:
+        PAHM.csv_doc(sys.argv[1])
+
 
 except KeyboardInterrupt:
     print("Exiting Program")
@@ -49,7 +60,7 @@ except Exception as exception_error:
     
 finally:
     rt.stop()
-    PAHM.csv_doc()
+    #PAHM.csv_doc()
     PAHM.turn_off()
     print('************ Finished *************', flush=True)
     pass
