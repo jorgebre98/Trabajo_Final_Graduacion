@@ -24,8 +24,8 @@ class TransmitReceive:
         self.pwm = 0
         self.angle = None
         self.lantency = None
-        self.contador = 950
-        self.values = []#['Latencia (s)', 'PWM Value', 'Angle (°)']]
+        self.contador = 0
+        self.values = np.array([])#['Latencia (s)', 'PWM Value', 'Angle (°)']]
 
     def Transmit_Receive (self):
         # Call input value to the PWM.
@@ -39,7 +39,7 @@ class TransmitReceive:
             data = self.port.read(size=4)
             self.latency = time.time()-ini
             self.angle = unpack('!i',data)
-            self.values.append([self.latency, self. pwm, self.angle[0]])
+            np.append(self.values,[self.latency, self. pwm, self.angle[0]],axis=0)
             print('PWM: {0}, Recibido: {1}.'.format(self.pwm,self.angle[0]))
 
     def pwm_ramp_step(self):
@@ -65,12 +65,12 @@ class TransmitReceive:
 
     
     def normalizer(self):
-        self.values = np.array(self.values)
-        new_values = []
+        #self.values = np.array(self.values)
+        new_values = np.array([])
         
         # Normalize pwm values between 0 and 1
         for c in self.values[:,1]:
-            new_values.append((c-1000)/1000)
+            np.append(new_values,(c-1000)/1000)
         self.values[:,1] = new_values
     
     def csv_doc(self, filename):
