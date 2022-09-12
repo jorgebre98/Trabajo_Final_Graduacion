@@ -13,22 +13,22 @@
 import csv
 import time
 import serial
+import tkinter
 import numpy as np
 from struct import pack, unpack
 
 # ********************************** Transmit/Receive Class **********************************# 
 class TransmitReceive:
-    def __init__(self, serial_port, tiempo):
+    def __init__(self, serial_port):
         self.port = serial_port
-        self.pwm = None
+        self.pwm = 0
         self.angle = None
         self.lantency = None
-        self.tiempo = tiempo
-        self.contador = 0
-        self.values = []
+        self.contador = 950
+        self.values = []#['Latencia (s)', 'PWM Value', 'Angle (°)']]
 
     def Transmit_Receive (self):
-        self.pwm = self.pwm_ramp_step() # Call input value to the PWM.
+        # Call input value to the PWM.
         if self.port.inWaiting() > 0:
             #       Send 2 bytes.
             packed = pack('!h',self.pwm)
@@ -39,15 +39,20 @@ class TransmitReceive:
             data = self.port.read(size=4)
             self.latency = time.time()-ini
             self.angle = unpack('!i',data)
+            self.values.append([self.latency, self. pwm, self.angle[0]])
+            print('PWM: {0}, Recibido: {1}.'.format(self.pwm,self.angle[0]))
 
-            self.values.append(self.tiempo[contador], self.latency, self. pwm, self.angle[0])
+    def pwm_ramp_step(self):
+        if self.contador <= 1300:
             self.contador += 1
-
-        def pwm_ramp_step(self):
-            if self.amplitude <= 350:
-                self.amplitude +=1
-            return self.amplitude
+        self.pwm = self.contador
     
+    def pwm_setvalue(self, value):
+        value = int(value)
+        if value <= 1300:
+            self.pwm = value
+        else:
+            self.pwm = 1300
     
     def reset(self):
         #   Clean transmit and receive buffers.
@@ -58,26 +63,20 @@ class TransmitReceive:
         self.pwm = 0
         self.port.write(pack('!i',self.pwm))
 
+    
     def normalizer(self):
         self.values = np.array(self.values)
         new_values = []
         
         # Normalize pwm values between 0 and 1
-        for c in self.values[:,2]
-            new_values.append((c-np.min(values))/(np.max(values)-np.min(values)))
-        self.values[:,2] = new_values
-
-        # Convert angle values of degrees to radians
-        new_values = []
-        for c in self.values[:,3]:
-            new_values.append(c*np.pi/180)
-        self.values[:,3] = new_values
-
-
-    def csv_doc(self):
-        name  = str(input('Nombre del documento: '))
-        self.normalize()
-        with open(name, 'w', newline='') as file:
+        for c in self.values[:,1]:
+            new_values.append((c-1000)/1000)
+        self.values[:,1] = new_values
+    
+    def csv_doc(self, filename):
+        self.normalizer()
+        with open(filename, 'w', newline='') as file:
             doc = csv.writer(file, delimiter=',')
-            doc.writerows([['Time (ms)', 'Latencia (s)', 'PWM Value', 'Angle (rads)']])
-            doc.writerows(self.values)        
+            doc.writerows([['Latencia (s)', 'PWM Value', 'Angle (°)']])
+            doc.writerows(self.values)
+            
