@@ -22,10 +22,10 @@ class TransmitReceive:
     def __init__(self, serial_port):
         self.port = serial_port
         self.pwm = 0
-        self.angle = None
-        self.lantency = None
+        self.angle = 0
+        self.lantency = 0
         self.contador = 0
-        self.values = np.array([])#['Latencia (s)', 'PWM Value', 'Angle (°)']]
+        self.values = [[0,0,0]]
 
     def Transmit_Receive (self):
         # Call input value to the PWM.
@@ -39,21 +39,11 @@ class TransmitReceive:
             data = self.port.read(size=4)
             self.latency = time.time()-ini
             self.angle = unpack('!i',data)
-            np.append(self.values,[self.latency, self. pwm, self.angle[0]],axis=0)
-            print('PWM: {0}, Recibido: {1}.'.format(self.pwm,self.angle[0]))
 
-    def pwm_ramp_step(self):
-        if self.contador <= 1300:
-            self.contador += 1
-        self.pwm = self.contador
-    
-    def pwm_setvalue(self, value):
-        value = int(value)
-        if value <= 1300:
-            self.pwm = value
-        else:
-            self.pwm = 1300
-    
+            #       Save latency, transmit and receive data
+            self.values = np.append(self.values,[[self.latency, self. pwm, self.angle[0]]], axis=0)
+           # print('PWM: {0}, Recibido: {1}.'.format(self.pwm,self.angle[0]))
+   
     def reset(self):
         #   Clean transmit and receive buffers.
         self.port.reset_input_buffer()
@@ -63,14 +53,23 @@ class TransmitReceive:
         self.pwm = 0
         self.port.write(pack('!i',self.pwm))
 
+    def pwm_ramp_step(self):
+        if self.contador <= 1220:
+            self.contador += 1
+        self.pwm = self.contador
     
+    def pwm_setvalue(self, value):
+        value = int(value)
+        if value <= 1250:
+            self.pwm = value
+        else:
+            self.pwm = 1250
+
     def normalizer(self):
-        #self.values = np.array(self.values)
-        new_values = np.array([])
-        
+        new_values = []        
         # Normalize pwm values between 0 and 1
         for c in self.values[:,1]:
-            np.append(new_values,(c-1000)/1000)
+            new_values = np.append(new_values,(c-1000)/1000)
         self.values[:,1] = new_values
     
     def csv_doc(self, filename):

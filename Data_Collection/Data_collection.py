@@ -5,6 +5,7 @@
 
 #   This file is responsible for getting data from the PAHM. To do this, this file makes use of
 #   the TransmitReceive, Timer and Inputs classes, which are in their respective file.
+
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,7 +25,7 @@ PAHM = TransmitReceive(serial_port)
 
 print('************ Starting *************', flush=True)
 PAHM.reset()
-print('Data_Recolecting .....', flush=True)
+print('Data_Recolecting ...', flush=True)
 
 rt = RepeatedTimer(0.02, PAHM.Transmit_Receive) # No need of rt.start()
 
@@ -34,21 +35,20 @@ rt = RepeatedTimer(0.02, PAHM.Transmit_Receive) # No need of rt.start()
 def comando(valor):
     PAHM.pwm_setvalue(valor)
 
-
-
 try:
     master = tkinter.Tk()
-    w = tkinter.Scale(master, from_=0, to=2000, orient=tkinter.HORIZONTAL,length=400,command=comando)
+    w = tkinter.Scale(master, from_=950, to=2000, orient=tkinter.HORIZONTAL,length=400,command=comando)
     w.pack()
     tkinter.mainloop()
-    print("Saliendo...")
-    PAHM.pwm_setvalue(0)
+    print("Exiting Program...")
+
+    PAHM.turn_off()
+    
     if len(sys.argv) > 1:
         PAHM.csv_doc(sys.argv[1])
 
-
 except KeyboardInterrupt:
-    print("Exiting Program")
+    print("Exiting Program...")
     PAHM.reset()
     PAHM.turn_off()
 
@@ -60,7 +60,6 @@ except Exception as exception_error:
     
 finally:
     rt.stop()
-    #PAHM.csv_doc()
     PAHM.turn_off()
     print('************ Finished *************', flush=True)
     pass
