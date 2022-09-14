@@ -41,7 +41,7 @@ class TransmitReceive:
             self.angle = unpack('!i',data)
 
             #       Save latency, transmit and receive data
-            self.values = np.append(self.values,[[self.latency, self. pwm, self.angle[0]]], axis=0)
+            self.values = np.append(self.values,[[self.latency, (self. pwm-1000)/1000, self.angle[0]*0.4]], axis=0)
            # print('PWM: {0}, Recibido: {1}.'.format(self.pwm,self.angle[0]))
    
     def reset(self):
@@ -64,16 +64,8 @@ class TransmitReceive:
             self.pwm = value
         else:
             self.pwm = 1250
-
-    def normalizer(self):
-        new_values = []        
-        # Normalize pwm values between 0 and 1
-        for c in self.values[:,1]:
-            new_values = np.append(new_values,(c-1000)/1000)
-        self.values[:,1] = new_values
     
     def csv_doc(self, filename):
-        self.normalizer()
         with open(filename, 'w', newline='') as file:
             doc = csv.writer(file, delimiter=',')
             doc.writerows([['Latencia (s)', 'PWM Value', 'Angle (°)']])

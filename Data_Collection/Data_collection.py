@@ -37,7 +37,7 @@ def comando(valor):
 
 try:
     master = tkinter.Tk()
-    w = tkinter.Scale(master, from_=950, to=2000, orient=tkinter.HORIZONTAL,length=400,command=comando)
+    w = tkinter.Scale(master, from_=990, to=1300, orient=tkinter.HORIZONTAL,length=400,command=comando)
     w.pack()
     tkinter.mainloop()
     print("Exiting Program...")
