@@ -61,11 +61,7 @@ class TransmitReceive:
         if value <= 1250:
             self.pwm = value
         else:
-            self.pwm = 1250
-    
-    def playback(self,val):
-        self.pwm = val
-    
+            self.pwm = 1250  
     
     def csv_doc(self, filename):
         with open(filename, 'w', newline='') as file:
