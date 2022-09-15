@@ -23,29 +23,40 @@ time.sleep(0.5) #   Time for pin assignment
 
 PAHM = TransmitReceive(serial_port)
 
-print('************ Starting *************', flush=True)
+print('************ Starting *************\n', flush=True)
 PAHM.reset()
-print('Data_Recolecting ...', flush=True)
+print('Data Colecting ...', flush=True)
 
 rt = RepeatedTimer(0.02, PAHM.Transmit_Receive) # No need of rt.start()
 
-#try:
-#    time.sleep(5) # long running job
-
-def comando(valor):
-    PAHM.pwm_setvalue(valor)
-
 try:
-    master = tkinter.Tk()
-    w = tkinter.Scale(master, from_=990, to=1300, orient=tkinter.HORIZONTAL,length=400,command=comando)
-    w.pack()
-    tkinter.mainloop()
-    print("Exiting Program...")
-
-    PAHM.turn_off()
+    #PLAYBACK
+    with open('step.csv', newline='') as file_name:
+        array = np.loadtxt(file_name, delimiter=",")
+    pwm_val = array[:,1]*1000+1000
+    for i in pwm_val:
+        PAHM.pwm(i)
     
     if len(sys.argv) > 1:
         PAHM.csv_doc(sys.argv[1])
+
+#def comando(valor):
+#    PAHM.pwm_setvalue(valor)
+
+#try:
+#    master = tkinter.Tk()
+#    master.title('My PWM value')
+#    master.geometry('500x100') 
+#    w = tkinter.Scale(master, from_=1000, to=1300, orient=tkinter.HORIZONTAL,length=400,command=comando,bg='white', fg='black', width=20)
+#    w.pack()
+#    tkinter.mainloop()
+    
+#    print("Exiting Program...")
+
+    
+#    if len(sys.argv) > 1:
+#        PAHM.csv_doc(sys.argv[1])
+
 
 except KeyboardInterrupt:
     print("Exiting Program...")
@@ -61,5 +72,12 @@ except Exception as exception_error:
 finally:
     rt.stop()
     PAHM.turn_off()
+    
+    plt.subplot(1,2,1)
+    plt.plot(PAHM.values[:,1])
+    plt.subplot(1,2,2)
+    plt.plot(PAHM.values[:,2])
+            
+    plt.show()
     print('************ Finished *************', flush=True)
     pass
