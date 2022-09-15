@@ -9,9 +9,27 @@
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+import argparse
+import os
 
 from Timer import *
 from Transmit_and_Receive import *
+
+def is_valid_file(parser, arg):
+    if not os.path.exists(arg):
+        parser.error("The file %s does not exist!" % arg)
+    else:
+        return open(arg, 'r')  # return an open file handle
+
+parser = argparse.ArgumentParser(description='Coleccione datos de la planta.')
+parser.add_argument('--input',type=str,default="",help='nombre de archivo de entrada')
+parser.add_argument('--output',type=str,default="",help='nombre de archivo de salida')
+args = parser.parse_args()
+
+playbackMode = (args.input != "")
+storeOutput  = (args.output != "")
+print("1: {0}, 2: {1}.".format(playbackMode,storeOutput))
+
 
 #   Port serial definition.
 serial_port  = serial.Serial("/dev/ttyTHS2", baudrate = 115200,
@@ -23,39 +41,44 @@ time.sleep(0.5) #   Time for pin assignment
 
 PAHM = TransmitReceive(serial_port)
 
+if playbackMode:
+    with open(args.input, newline='') as file_name:
+        array=np.loadtxt(file_name, delimiter=",")
+        PAHM.pwm_set_safe_value(array[:,1])
+else:
+    PAHM.pwm_set_safe_value(0.0)
+
+
+
+
 print('************ Starting *************\n', flush=True)
 PAHM.reset()
 print('Data Colecting ...', flush=True)
 
 rt = RepeatedTimer(0.02, PAHM.Transmit_Receive) # No need of rt.start()
 
+
+def comando(valor):
+    PAHM.pwm_set_safe_value(valor/1000.0)
+
 try:
     #PLAYBACK
-    with open('step.csv', newline='') as file_name:
-        array = np.loadtxt(file_name, delimiter=",")
-    pwm_val = array[:,1]*1000+1000
-    for i in pwm_val:
-        PAHM.pwm(i)
     
-    if len(sys.argv) > 1:
-        PAHM.csv_doc(sys.argv[1])
+    if playbackMode:
+          sleep(len(PAHM.pwm)*0.02)
+    else:
+        master = tkinter.Tk()
+        master.title('My PWM value')
+        master.geometry('500x100') 
+        w = tkinter.Scale(master, from_=0, to=1000, orient=tkinter.HORIZONTAL,length=800,command=comando,bg='white', fg='black', width=20)
+        w.pack()
+        tkinter.mainloop()
+        
+        print("Exiting Program...")
 
-#def comando(valor):
-#    PAHM.pwm_setvalue(valor)
-
-#try:
-#    master = tkinter.Tk()
-#    master.title('My PWM value')
-#    master.geometry('500x100') 
-#    w = tkinter.Scale(master, from_=1000, to=1300, orient=tkinter.HORIZONTAL,length=400,command=comando,bg='white', fg='black', width=20)
-#    w.pack()
-#    tkinter.mainloop()
-    
-#    print("Exiting Program...")
-
-    
-#    if len(sys.argv) > 1:
-#        PAHM.csv_doc(sys.argv[1])
+        
+    if storeOutput:
+       PAHM.csv_doc(args.output)
 
 
 except KeyboardInterrupt:
@@ -73,11 +96,10 @@ finally:
     rt.stop()
     PAHM.turn_off()
     
-    plt.subplot(1,2,1)
-    plt.plot(PAHM.values[:,1])
-    plt.subplot(1,2,2)
-    plt.plot(PAHM.values[:,2])
-            
-    plt.show()
+    #plt.subplot(1,2,1)
+    #plt.plot(PAHM.values[:,1])
+    #plt.subplot(1,2,2)
+    #plt.plot(PAHM.values[:,2])
+    #plt.show()
     print('************ Finished *************', flush=True)
     pass
