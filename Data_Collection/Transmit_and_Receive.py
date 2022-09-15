@@ -21,26 +21,42 @@ from struct import pack, unpack
 class TransmitReceive:
     def __init__(self, serial_port):
         self.port = serial_port
-        self.pwm = 1000
+        self.pwm = 0.0
         self.angle = 0
         self.lantency = 0
-        self.contador = 990
-        self.values = np.array([])#[[0,0,0]]
+        self.contador = 0
+        self.cont = 0
+        self.values = np.array([[0,0,0]])#[[0,0,0]]
+
+    def denormalizePWM(self,normalizedValue):
+        return int(normalizeValue*1000+1000)
 
     def Transmit_Receive (self):
+        #       Send 2 bytes
+        if np.isscalar(self.pwm):
+            pwmval=self.pwm
+        else:          
+            if self.contador>=len(self.pwm):
+                self.contador=0
+            else:
+                self.contador+=1
+                  
+            pwmval=self.pwm[self.contador]
+                
+        packed = pack('!h',self.denormalizePWM(pwmval))
+                
+        ini = time.time()
+        self.port.write(packed)
+        
         if self.port.inWaiting() > 0:
-            #       Send 2 bytes.
-            packed = pack('!h',self.pwm)
-            ini = time.time()
-            self.port.write(packed)
-            
             #       Receive 4 bytes.
             data = self.port.read(size=4)
             self.latency = time.time()-ini
             self.angle = unpack('!i',data)
 
             #       Save latency, transmit and receive data
-            self.values = np.append(self.values,[[self.latency, (self. pwm-1000)/1000, self.angle[0]*0.4]], axis=0)
+            val = np.array([[self.latency, pwmval, self.angle[0]*0.4]])
+            self.values = np.append(self.values,val, axis=0)
    
     def reset(self):
         #   Clean transmit and receive buffers.
@@ -54,14 +70,11 @@ class TransmitReceive:
     def pwm_ramp_step(self):
         if self.contador <= 1220:
             self.contador += 1
-        self.pwm = self.contador
+        self.pwm = (self.contador-1000)/1000.0
     
-    def pwm_setvalue(self, value):
-        value = int(value)
-        if value <= 1250:
-            self.pwm = value
-        else:
-            self.pwm = 1250  
+    def pwm_set_safe_value(self, value):
+        self.pwm=np.min(value,0.25)
+        
     
     def csv_doc(self, filename):
         with open(filename, 'w', newline='') as file:
