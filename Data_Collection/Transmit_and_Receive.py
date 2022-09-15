@@ -21,14 +21,13 @@ from struct import pack, unpack
 class TransmitReceive:
     def __init__(self, serial_port):
         self.port = serial_port
-        self.pwm = 0
+        self.pwm = 1000
         self.angle = 0
         self.lantency = 0
-        self.contador = 0
-        self.values = [[0,0,0]]
+        self.contador = 990
+        self.values = np.array([])#[[0,0,0]]
 
     def Transmit_Receive (self):
-        # Call input value to the PWM.
         if self.port.inWaiting() > 0:
             #       Send 2 bytes.
             packed = pack('!h',self.pwm)
@@ -42,7 +41,6 @@ class TransmitReceive:
 
             #       Save latency, transmit and receive data
             self.values = np.append(self.values,[[self.latency, (self. pwm-1000)/1000, self.angle[0]*0.4]], axis=0)
-           # print('PWM: {0}, Recibido: {1}.'.format(self.pwm,self.angle[0]))
    
     def reset(self):
         #   Clean transmit and receive buffers.
@@ -64,6 +62,10 @@ class TransmitReceive:
             self.pwm = value
         else:
             self.pwm = 1250
+    
+    def playback(self,val):
+        self.pwm = val
+    
     
     def csv_doc(self, filename):
         with open(filename, 'w', newline='') as file:
