@@ -6,20 +6,14 @@
 #   This file is responsible for getting data from the PAHM. To do this, this file makes use of
 #   the TransmitReceive, Timer and Inputs classes, which are in their respective file.
 
-import sys
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
-import argparse
-import os
+
 
 from Timer import *
 from Transmit_and_Receive import *
 
-def is_valid_file(parser, arg):
-    if not os.path.exists(arg):
-        parser.error("The file %s does not exist!" % arg)
-    else:
-        return open(arg, 'r')  # return an open file handle
 
 parser = argparse.ArgumentParser(description='Coleccione datos de la planta.')
 parser.add_argument('--input',type=str,default="",help='nombre de archivo de entrada')
@@ -28,7 +22,9 @@ args = parser.parse_args()
 
 playbackMode = (args.input != "")
 storeOutput  = (args.output != "")
-print("1: {0}, 2: {1}.".format(playbackMode,storeOutput))
+#print("1: {0}, 2: {1}.".format(playbackMode,storeOutput))
+
+
 
 
 #   Port serial definition.
@@ -59,13 +55,13 @@ rt = RepeatedTimer(0.02, PAHM.Transmit_Receive) # No need of rt.start()
 
 
 def comando(valor):
-    PAHM.pwm_set_safe_value(valor/1000.0)
+    PAHM.pwm_set_safe_value(int(valor)/1000.0)
 
 try:
     #PLAYBACK
     
     if playbackMode:
-          sleep(len(PAHM.pwm)*0.02)
+          time.sleep(len(PAHM.pwm)*0.02)
     else:
         master = tkinter.Tk()
         master.title('My PWM value')
