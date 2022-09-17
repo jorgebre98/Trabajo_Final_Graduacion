@@ -1,68 +1,60 @@
-#   Copyright (C) 2022 Jorge Brenes Alfaro.
-#   EL5617 Trabajo Final de Graduación.
-#   Escuela de Ingeniería Electrónica.
-#   Tecnológico de Costa Rica.
+# ************************************************************* #
+#               Copyright (C) 2022 Jorge Brenes Alfaro.
+#               EL5617 Trabajo Final de Graduación.
+#               Escuela de Ingeniería Electrónica.
+#               Tecnológico de Costa Rica.
+# ************************************************************* #
 
-#   This file is responsible for getting data from the PAHM. To do this, this file makes use of
-#   the TransmitReceive, Timer and Inputs classes, which are in their respective file.
+#   This file is responsible for collect data from the PAHM. To do this, this file
+#   makes use of the TransmitReceive and RepeatedTimer classes, which are in
+#   their respective file. Futhermore, is possible to use two inputs: manual input
+#   and playback input to reproduce a same previous input
 
+#   Libraries.
 import argparse
 import numpy as np
-import matplotlib.pyplot as plt
-
 
 from Timer import *
 from Transmit_and_Receive import *
 
-
-parser = argparse.ArgumentParser(description='Coleccione datos de la planta.')
-parser.add_argument('--input',type=str,default="",help='nombre de archivo de entrada')
-parser.add_argument('--output',type=str,default="",help='nombre de archivo de salida')
+parser = argparse.ArgumentParser(description='Collect data from PAHM plant.')
+parser.add_argument('--input',type=str,default="",help='Name of the input file to playback. ')
+parser.add_argument('--output',type=str,default="",help='Name of the output file where the data is saved.')
 args = parser.parse_args()
 
 playbackMode = (args.input != "")
 storeOutput  = (args.output != "")
-#print("1: {0}, 2: {1}.".format(playbackMode,storeOutput))
-
-
-
 
 #   Port serial definition.
-serial_port  = serial.Serial("/dev/ttyTHS2", baudrate = 115200,
-                             stopbits = serial.STOPBITS_ONE,
-                             bytesize = serial.EIGHTBITS,
-                             parity = serial.PARITY_NONE)
+serial_port  = serial.Serial("/dev/ttyTHS2", baudrate = 115200, stopbits = serial.STOPBITS_ONE,
+                             bytesize = serial.EIGHTBITS, parity = serial.PARITY_NONE)
 
-time.sleep(0.5) #   Time for pin assignment
+time.sleep(0.5) #   Time for pin assignment.
 
 PAHM = TransmitReceive(serial_port)
 
 if playbackMode:
+    #       If playback mode is active, use a .csv file.
     with open(args.input, newline='') as file_name:
         array=np.loadtxt(file_name, delimiter=",")
         PAHM.pwm_set_safe_value(array[:,1])
 else:
     PAHM.pwm_set_safe_value(0.0)
 
-
-
-
 print('************ Starting *************\n', flush=True)
-PAHM.reset()
-print('Data Colecting ...', flush=True)
-
+PAHM.reset()    #   Clean transmit and receive buffers.
+print('Data Colecting ...\n', flush=True)
 rt = RepeatedTimer(0.02, PAHM.Transmit_Receive) # No need of rt.start()
-
 
 def comando(valor):
     PAHM.pwm_set_safe_value(int(valor)/1000.0)
 
 try:
-    #PLAYBACK
-    
+    #   PLAYBACK
     if playbackMode:
           time.sleep(len(PAHM.pwm)*0.02)
     else:
+    #   MANUAL
         master = tkinter.Tk()
         master.title('My PWM value')
         master.geometry('500x100') 
@@ -71,10 +63,9 @@ try:
         tkinter.mainloop()
         
         print("Exiting Program...")
-
         
     if storeOutput:
-       PAHM.csv_doc(args.output)
+       PAHM.csv_doc(args.output) #  Save data in .csv file
 
 
 except KeyboardInterrupt:
@@ -91,11 +82,5 @@ except Exception as exception_error:
 finally:
     rt.stop()
     PAHM.turn_off()
-    
-    #plt.subplot(1,2,1)
-    #plt.plot(PAHM.values[:,1])
-    #plt.subplot(1,2,2)
-    #plt.plot(PAHM.values[:,2])
-    #plt.show()
     print('************ Finished *************', flush=True)
     pass
