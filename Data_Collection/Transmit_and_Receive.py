@@ -37,13 +37,11 @@ class TransmitReceive:
             pwmval = self.pwm
         else:
             pwmval = self.pwm[self.contador]
-            
             self.contador += 1          
             if self.contador >= len(self.pwm):
                 self.contador = 0
                 
         packed = pack('!h',self.denormalizePWM(pwmval))
-                
         ini = time.time()
         self.port.write(packed)
         
@@ -52,9 +50,9 @@ class TransmitReceive:
             data = self.port.read(size=4)
             self.latency = time.time()-ini
             self.angle = unpack('!i',data)
-
-            #       Save latency, transmit and receive data
-            self.values = np.append(self.values,np.array([[self.latency, pwmval, self.angle[0]*0.4]]), axis=0)
+            
+        #       Save latency, transmit and receive data
+        self.values = np.append(self.values,np.array([[self.latency, pwmval, self.angle[0]*0.4]]), axis=0)
    
     def reset(self):
         #   Clean transmit and receive buffers.
