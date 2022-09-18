@@ -37,7 +37,7 @@ PAHM = TransmitReceive(serial_port)
 if playbackMode:
     #       If playback mode is active, use a .csv file.
     data = pd.read_csv(args.input)
-    PAHM.pwm_set_safe_value(data.values[:,1])
+    PAHM.pwm_set_safe_value(data.values[:,2])
    # with open(args.input, newline='') as file_name:
         #array=np.loadtxt(file_name, delimiter=",")
         #PAHM.pwm_set_safe_value(array[:,1])
