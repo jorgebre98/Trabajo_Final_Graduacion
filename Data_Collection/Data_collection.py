@@ -13,6 +13,7 @@
 #   Libraries.
 import argparse
 import numpy as np
+import pandas as pd
 
 from Timer import *
 from Transmit_and_Receive import *
@@ -35,9 +36,11 @@ PAHM = TransmitReceive(serial_port)
 
 if playbackMode:
     #       If playback mode is active, use a .csv file.
-    with open(args.input, newline='') as file_name:
-        array=np.loadtxt(file_name, delimiter=",")
-        PAHM.pwm_set_safe_value(array[:,1])
+    data = pd.read_csv(args.input)
+    PAHM.pwm_set_safe_value(data.values[:,1])
+   # with open(args.input, newline='') as file_name:
+        #array=np.loadtxt(file_name, delimiter=",")
+        #PAHM.pwm_set_safe_value(array[:,1])
 else:
     PAHM.pwm_set_safe_value(0.0)
 

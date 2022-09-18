@@ -15,6 +15,7 @@ import time
 import serial
 import tkinter
 import numpy as np
+import pandas as pd
 from struct import pack, unpack
 
 # ********************************** Transmit/Receive Class **********************************# 
@@ -25,7 +26,6 @@ class TransmitReceive:
         self.angle = 0
         self.lantency = 0
         self.contador = 0
-        self.cont = 0
         self.values = np.array([[0,0,0]])
 
     def denormalizePWM(self,normalizedValue):
@@ -67,8 +67,10 @@ class TransmitReceive:
         self.pwm = np.minimum(value,0.25)
         
     def csv_doc(self, filename):
-        with open(filename, 'w', newline='') as file:
-            doc = csv.writer(file, delimiter=',')
-            doc.writerows([['Latencia (s)', 'PWM Value', 'Angle (°)']])
-            doc.writerows(self.values)
+        files = pd.DataFrame(self.values, columns=['Latency','PWM Value','Angle'], delimiter=',')
+        files.to_csv(filename)
+        #with open(filename, 'w', newline='') as file:
+            #doc = csv.writer(file, delimiter=',')
+            #doc.writerows([['Latencia (s)', 'PWM Value', 'Angle (°)']])
+            #doc.writerows(self.values)
             
