@@ -15,7 +15,7 @@ import argparse
 import numpy as np
 import pandas as pd
 
-from Timer import *
+from RepeatedTimer import *
 from Transmit_and_Receive import *
 
 parser = argparse.ArgumentParser(description='Collect data from PAHM plant.')
@@ -36,11 +36,8 @@ PAHM = TransmitReceive(serial_port)
 
 if playbackMode:
     #       If playback mode is active, use a .csv file.
-    data = pd.read_csv(args.input)
+    data = pd.read_csv(args.input,delimiter=',')
     PAHM.pwm_set_safe_value(data.values[:,2])
-   # with open(args.input, newline='') as file_name:
-        #array=np.loadtxt(file_name, delimiter=",")
-        #PAHM.pwm_set_safe_value(array[:,1])
 else:
     PAHM.pwm_set_safe_value(0.0)
 
@@ -55,7 +52,7 @@ def comando(valor):
 try:
     #   PLAYBACK
     if playbackMode:
-          time.sleep(len(PAHM.pwm)*0.02)
+          time.sleep(np.shape(PAHM.pwm)[0]*0.02)
     else:
     #   MANUAL
         master = tkinter.Tk()
