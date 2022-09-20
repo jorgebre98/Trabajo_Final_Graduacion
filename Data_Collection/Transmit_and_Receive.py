@@ -10,7 +10,6 @@
 #   the mimetic neural network.
 
 #********** Libraries **********#
-import csv
 import time
 import serial
 import tkinter
@@ -25,7 +24,7 @@ class TransmitReceive:
         self.pwm = 0.0
         self.angle = 0
         self.lantency = 0
-        self.contador = 0
+        self.contador = 1
         self.values = np.array([[0,0,0]])
 
     def denormalizePWM(self,normalizedValue):
@@ -67,10 +66,6 @@ class TransmitReceive:
         self.pwm = np.minimum(value,0.25)
         
     def csv_doc(self, filename):
-        files = pd.DataFrame(self.values, columns=['Latency','PWM Value','Angle'], delimiter=',')
+        files = pd.DataFrame(self.values, columns=['Latency','PWM Value','Angle'])
         files.to_csv(filename)
-        #with open(filename, 'w', newline='') as file:
-            #doc = csv.writer(file, delimiter=',')
-            #doc.writerows([['Latencia (s)', 'PWM Value', 'Angle (°)']])
-            #doc.writerows(self.values)
             
