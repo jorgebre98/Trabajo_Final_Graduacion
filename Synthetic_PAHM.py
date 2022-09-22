@@ -71,3 +71,6 @@ def Synthetic_PAHM(filename):
     plt.ylabel('Ángulo')
     plt.title('Step response')
     plt.show()
+
+filename = str(input('Nombre de archivo: '))
+Synthetic_PAHM(filename)
