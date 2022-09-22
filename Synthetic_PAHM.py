@@ -17,14 +17,14 @@ from numpy.linalg import inv
 import matplotlib.pyplot as plt
 import pandas as pd
 
-#   Function to discrete the PAHM's dynamic
-#   Discretize by backward euler method
-def dinamica_modelo(A,B,C,cond_initial,input_sequence, time_steps,muestreo):
+#   Function to discrete the PAHM's dynamic.
+#   Discretize by backward euler method.
+def dinamica_modelo(A,B,C,cond_initial,input_sequence, time_steps,h):
     I = np.identity(A.shape[0])
-    Ad = inv(I - muestreo*A)
-    Bd = Ad*muestreo*B
-    Xd = np.zeros(shape=(A.shape[0],time_steps + 1)) # # Vectores de 2 x n / Entrada en tiempo discreto
-    Yd = np.zeros(shape=(C.shape[0],time_steps + 1)) # # Vectores de 1 x n / Salida en tiempo discreto
+    Ad = inv(I - h*A)
+    Bd = Ad*h*B
+    Xd = np.zeros(shape=(A.shape[0],time_steps + 1)) #  Vectors 2 x n / Input in discrete time.
+    Yd = np.zeros(shape=(C.shape[0],time_steps + 1)) #  Vectors 1 x n / Output in discrete time.
     
     for i in range(0,time_steps):
         if i==0:
@@ -40,8 +40,7 @@ def dinamica_modelo(A,B,C,cond_initial,input_sequence, time_steps,muestreo):
     Yd[:,[-1]] = C*x
     return Xd, Yd
 
-#   Define the 
-def Synthetic_PAHM():
+def Synthetic_PAHM(filename):
 #   Definition of the model in continuous time.
 #   A,B,C              - continuous time system matrices 
 #   initial_state      - the initial state of the system 
@@ -50,10 +49,10 @@ def Synthetic_PAHM():
 #   input_seq          - Input sequence
 
     A = np.matrix([[0, 1],[-17.97, -0.3801]])
-    B = np.matrix([[0],[13.12]])
+    B = np.matrix([[0],[2965]])
     C = np.matrix([[1, 0]])
 
-    data = pd.read_csv('Respuesta_escalon4.csv')
+    data = pd.read_csv(filename)
     input_seq = data.values[:,2]
     tiempo = len(input_seq)
     sampling = 0.02
@@ -67,7 +66,7 @@ def Synthetic_PAHM():
     plt.title('Input sequence')
     
     plt.subplot(1,2,2)
-    plt.plot(Y)
+    plt.plot(Y[0,:])
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo')
     plt.title('Step response')
