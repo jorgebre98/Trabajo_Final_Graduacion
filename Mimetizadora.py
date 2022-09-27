@@ -1,28 +1,13 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# ## Tecnológico de Costa Rica
-# 
-# ### Autor: Jorge Andrés Brenes Alfaro
-# 
-# ## Red mimetizadora
-# 
-# 
-
-# ## 1. Bibliotecas
-
-# In[1]:
-
-
+import os
+import joblib
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, GRU, TimeDistributed
-from tensorflow.keras.optimizers import RMSprop, Adam
-
 from tensorflow.keras.backend import clear_session
+from tensorflow.keras.optimizers import RMSprop, Adam
+from tensorflow.keras.layers import Dense, Dropout, GRU, TimeDistributed
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -30,42 +15,35 @@ warnings.filterwarnings('ignore')
 
 # ## 2. Dataset 
 
-# In[2]:
+Dir = os.listdir('/Users/jorge/Documents/TEC/TFG/Datos_Recolectados')
+Data_Collect = np.array([[0,0,0,0]])
+for filename in Dir:
+    file = pd.read_csv('/Users/jorge/Documents/TEC/TFG/Datos_Recolectados/'+filename)
+    Data_Collect = np.append(Data_Collect, file.values,axis=0)
+train_data = Data_Collect[:,2]
+train_label = Data_Collect[:,3]
 
 
-Dataset = pd.read_excel('Data_Collection.xlsx')  #Se leen los datos del archivo .xlsx
-Dataset = Dataset.values # convierten los valores a un array
+train_data = np.array([])
+val_data = np.array([])
+train_label = np.array([])
+val_label = np.array([])
+cont=0
 
-latencia, pwm_value, angle = [Dataset[:,0]], Dataset[:,1], Dataset[:,2]
+while(cont < Data_Collect[:,2].shape[0]):
+    if cont < round(Data_Collect[:,2].shape[0]*0.75):
+        train_data = np.append(train_data, Data_Collect[:,2][cont])
+        train_label = np.append(train_label, Data_Collect[:,3][cont])
+    else:
+        val_data = np.append(val_data, Data_Collect[:,3][cont])
+        val_label = np.append(val_label, Data_Collect[:,3][cont])
+    cont+=1
 
-# **** DATA ****
-train_data = pwm_value[:int(0.8*Dataset.shape[0])] # 80% de los datos
-val_data = pwm_value[int(0.8*Dataset.shape[0]):int(0.9*Dataset.shape[0])] # 10% de los datos
-test_data = pwm_value[int(0.9*Dataset.shape[0]):] # 10% de los datos
-
-# **** LABELS ****
-train_label = angle[:int(0.8*Dataset.shape[0])]
-val_label = angle[int(0.8*Dataset.shape[0]):int(0.9*Dataset.shape[0])]
-test_label = angle[int(0.9*Dataset.shape[0]):] 
-
-# **** RESHAPE ****
 train_data = np.reshape(train_data,(1,train_data.shape[0],1))
-val_data = np.reshape(val_data,(1,val_data.shape[0],1))
-test_data = np.reshape(test_data,(1,test_data.shape[0],1))
-
 train_label = np.reshape(train_label,(1,train_label.shape[0],1))
-val_label = np.reshape(val_label,(1,val_label.shape[0],1))
-test_label = np.reshape(test_label,(1,test_label.shape[0],1))
 
-print('El total de datos de entrenamiento es: ', train_data.shape[1])
-print('El total de datos de validación es: ', val_data.shape[1])
-print('El total de datos de prueba es: ', test_data.shape[1])
-
-
-# In[3]:
-
-
-train_data.shape
+val_data = np.reshape(val_data,(1,val_data.shape[0],1))
+val_label = np.reshape(val_data,(1,val_label.shape[0],1))
 
 
 # ## 3. Neural Network
@@ -78,33 +56,42 @@ train_data.shape
 clear_session()
 
 model = Sequential()
-model.add(GRU(64, input_shape=(train_data.shape[1],train_data.shape[2]),return_sequences=True))
-model.add(Dense(1))
-#model.add(TimeDistributed(Dense(1)))  #there is no difference between this and model.add(Dense(1))...
-model.compile(optimizer=Adam(), loss='mean_squared_error', metrics=['mse'])
+model.add(GRU(64, input_shape=(train_data.shape[1],1),return_sequences=True))
+model.add(Dropout(0.35))
+model.add(TimeDistributed(Dense(1)))  #there is no difference between this and model.add(Dense(1))...
+model.compile(optimizer=Adam(), loss='mean_squared_error', metrics=['mse','acc'])
 
 model.summary()
 
 
 # ### 3.2 Model Training
 
-# In[ ]:
 
+history = model.fit(train_data, train_label,
+                    epochs=500, batch_size=8,
+                    validation_data = (val_data,val_label),
+                    verbose=2)
 
-history = model.fit(train_data, train_label, 
-                  epochs=500, batch_size=1, 
-                  validation_data=(val_data,val_label),verbose=2)
-
-model.save('modelo_PAHM', save_format="h5")
-
-# use the test data to predict the model response
 #testPredict = model.predict(test_data)
 
 
 # ### 3.3 Model Evaluate
 
-# In[ ]:
+#loss, accuracy = model.evaluate(testX,output_test)
+
+joblib.dump(model, 'GRU_model.joblib')
 
 
-
+loss=history.history['loss']
+val_loss=history.history['val_loss']
+epochs=range(1,len(loss)+1)
+plt.figure()
+plt.plot(epochs, loss,'b', label='Training loss')
+plt.plot(epochs, val_loss,'r', label='Validation loss')
+plt.title('Training and validation losses')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.xscale('log')
+plt.legend()
+plt.show()
 
