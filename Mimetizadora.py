@@ -79,9 +79,10 @@ model.summary()
 # ### 3.2 Model Training
 print('Training',flush=True)
 history = model.fit(train_x, train_label,
-                    epochs=500, batch_size=64,
-                    validation_data = (val_x,val_label))
-                    #verbose=2)
+                    epochs=500, batch_size=8,
+                    validation_data = (val_x,val_label),
+                    verbose=2)
+
 
 testPredict = model.predict(test_x)
 
