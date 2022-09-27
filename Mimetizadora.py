@@ -13,10 +13,10 @@ from tensorflow.keras.layers import Dense, Dropout, GRU, TimeDistributed
 
 # ## 2. Dataset 
 print('*************** Process Data *************** ',flush=True)
-Dir = os.listdir('/Users/jorge/Documents/TEC/TFG/Datos_Recolectados')
+Dir = os.listdir('/home/nvidia/Documents/TFG Jorge Brenes/Datos_Recolectados')
 Data_Collect = np.array([[0,0,0,0]])
 for filename in Dir:
-    file = pd.read_csv('/Users/jorge/Documents/TEC/TFG/Datos_Recolectados/'+filename)
+    file = pd.read_csv('/home/nvidia/Documents/TFG Jorge Brenes/Datos_Recolectados/'+filename)
     Data_Collect = np.append(Data_Collect, file.values,axis=0)
 
 train_data = np.array([])
@@ -78,10 +78,10 @@ model.summary()
 
 # ### 3.2 Model Training
 print('Training',flush=True)
-history = model.fit(train_data, train_label,
+history = model.fit(train_x, train_label,
                     epochs=500, batch_size=64,
-                    validation_data = (val_data,val_label),
-                    verbose=2)
+                    validation_data = (val_x,val_label))
+                    #verbose=2)
 
 testPredict = model.predict(test_x)
 
