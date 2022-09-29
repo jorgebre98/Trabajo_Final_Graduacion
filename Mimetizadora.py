@@ -13,10 +13,12 @@ from tensorflow.keras.layers import Dense, Dropout, GRU, TimeDistributed
 
 # ## 2. Dataset 
 print('*************** Process Data *************** ',flush=True)
-Dir = os.listdir('/home/nvidia/Documents/TFG Jorge Brenes/Datos_Recolectados')
+#Dir = os.listdir('/home/nvidia/Documents/TFG Jorge Brenes/Datos_Recolectados')
+Dir = os.listdir('/Users/jorge/Documents/TEC/TFG/Datos_Recolectados')
 Data_Collect = np.array([[0,0,0,0]])
 for filename in Dir:
-    file = pd.read_csv('/home/nvidia/Documents/TFG Jorge Brenes/Datos_Recolectados/'+filename)
+    #file = pd.read_csv('/home/nvidia/Documents/TFG Jorge Brenes/Datos_Recolectados/'+filename)
+    file = pd.read_csv('/Users/jorge/Documents/TEC/TFG/Datos_Recolectados/'+filename)
     Data_Collect = np.append(Data_Collect, file.values,axis=0)
 
 train_data = np.array([])
