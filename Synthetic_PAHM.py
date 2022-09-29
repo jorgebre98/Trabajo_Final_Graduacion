@@ -8,8 +8,8 @@
 #   The presen code is based in H. Kapasi, 2022. "Modeling Non-Linear Dynamic Systems with Neural Networks", 2022. [Online].
 #   Available in: https://towardsdatascience.com/modeling-non-linear-dynamic-systems-with-neural-networks-f3761bc92649.
 # 
-#   La red diseñada es la encargada de reproducir el comportamiento de entrada y salida de un modelado empírico de la planta
-# prototipo de péndulo amortiguado a hélice (PAHM).
+#  The designed network is responsible for reproducing the input and output behavior of an empirical modeling of the
+#   prototype plant of a propeller-damped pendulum  (PAHM).
 
 #   Libraries
 import numpy as np
@@ -42,11 +42,11 @@ def dinamica_modelo(A,B,C,cond_initial,input_sequence, time_steps,h):
 
 def Synthetic_PAHM(filename):
 #   Definition of the model in continuous time.
-#   A,B,C              - continuous time system matrices 
+#   A,B,C               - continuous time system matrices 
 #   initial_state      - the initial state of the system 
-#   time_steps         - the total number of simulation time steps 
-#   sampling           - the sampling period for the backward Euler discretization
-#   input_seq          - Input sequence
+#   time_steps       - the total number of simulation time steps 
+#   sampling         - the sampling period for the backward Euler discretization
+#   input_seq        - Input sequence
 
     A = np.matrix([[0, 1],[-17.97, -0.3801]])
     B = np.matrix([[0],[2965]])
