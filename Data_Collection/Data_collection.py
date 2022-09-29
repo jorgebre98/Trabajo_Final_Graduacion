@@ -5,10 +5,10 @@
 #               Tecnológico de Costa Rica.
 # ************************************************************* #
 
-#   This file is responsible for collect data from the PAHM. To do this, this file
-#   makes use of the TransmitReceive and RepeatedTimer classes, which are in
-#   their respective file. Futhermore, is possible to use two inputs: manual input
-#   and playback input to reproduce a same previous input
+#   This file is responsible for collecting the PAHM data. To do this, this file
+#   makes use of the TransmitReceive and RepeatedTimer classes, which are located in
+#   their respective files. In addition, it is possible to use two inputs: the manual input
+#   and playback input to replay the same previous input.
 
 #   Libraries.
 import argparse
