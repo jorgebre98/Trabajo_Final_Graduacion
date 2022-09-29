@@ -9,8 +9,6 @@ from tensorflow.keras.backend import clear_session
 from tensorflow.keras.optimizers import RMSprop, Adam
 from tensorflow.keras.layers import Dense, Dropout, GRU, TimeDistributed
 
-
-
 # ## 2. Dataset 
 print('*************** Process Data *************** ',flush=True)
 #Dir = os.listdir('/home/nvidia/Documents/TFG Jorge Brenes/Datos_Recolectados')
@@ -64,6 +62,11 @@ tmp_test = np.concatenate((test_data, np.zeros(shape=(test_data.shape[0],1))), a
 test_x = np.reshape(tmp_test, (1,tmp_test.shape[0],tmp_test.shape[1]))
 test_label = np.reshape(test_data,(1,test_label.shape[0],1))
 
+'''
+train_x = np.reshape(train_data,(1,train_data.shape[0],1))
+val_x = np.reshape(val_data,(1,val_data.shape[0],1))
+test_x = np.reshape(test_data,(1,test_data.shape[0],1))
+'''
 print('*************** Finish ***************  ',flush=True)
 
 # ## 3. Neural Network
