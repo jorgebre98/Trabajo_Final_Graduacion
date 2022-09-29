@@ -1,13 +1,15 @@
-# Copyright (C) 2022 Jorge Brenes Alfaro.
-# EL5617 Trabajo Final de Graduación.
-# Escuela de Ingeniería Electrónica.
-# Tecnológico de Costa Rica.
+# ************************************************************* #
+#               Copyright (C) 2022 Jorge Brenes Alfaro.
+#               EL5617 Trabajo Final de Graduación.
+#               Escuela de Ingeniería Electrónica.
+#               Tecnológico de Costa Rica.
+# ************************************************************* #
 
-#   This file is responsible for transmit and receive data from the PAHM. For the generation
-#   of data, 2 bytes corresponding to the value of the PWM are sent and it receives 4 bytes
-#   corresponding to the value of the angle. The duration time of transmitting and receiving
-#   the data is also saved. With these 3 values, a .csv file is created that will be used to train
-#   the mimetic neural network.
+#   This file is responsible for transmit and receive the PAHM data. For the generation, 2 bytes
+#   corresponding to the value of the PWM are sent and 4 bytes corresponding to the value
+#   of the angle are received. The time duration  of data transmission and reception is also
+#   stored. With these 3 values a .csv file is created, which will be used to train the mimetic
+#   neural network.
 
 #********** Libraries **********#
 import time
