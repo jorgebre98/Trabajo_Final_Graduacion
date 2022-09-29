@@ -5,8 +5,8 @@
 #               Tecnológico de Costa Rica.
 # ************************************************************* #
 
-#   This file contains the timer class retreieve from [1]. Your goal is call a function a number
-#   of times for a given amount of time.
+#   This file contains the timer class retreieve from [1]. It purpose is to call a function a number
+#   of times for a given time.
 
 #   Libraries
 import time
