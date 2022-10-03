@@ -11,7 +11,6 @@
 
 #Libraries to proccess data
 import os
-import joblib
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -35,9 +34,10 @@ wandb.init(project="Prueba",
            resume='Allow', 
            id='Mimetic_RNA_1')
 wandb.config = {
-    "epochs": 500,
-    "batch_size": 10,
-    "learning_rate":0.001,
+    "epochs": 5,
+    "batch_size": 32,
+    "learning_rate": 0.001,
+    "window": 100,
     "Dropout": 0.35
 }
 
@@ -107,11 +107,12 @@ print('******************* Finish *******************',flush=True)
 
 clear_session()
 model = Sequential()
-model.add(GRU(64, input_shape=(X_train.shape[1],1),return_sequences=True))
+model.add(GRU(units=64, input_shape=(X_train.shape[1],1),return_sequences=True))
 model.add(Dropout(wandb.config['Dropout']))
-model.add(GRU(64, input_shape=(X_train.shape[1],1),return_sequences=True))
+model.add(GRU(units=64, input_shape=(X_train.shape[1],1),return_sequences=True))
 model.add(Dropout(wandb.config['Dropout']))
-model.add(TimeDistributed(Dense(1))) # There is no difference between this and model.add(Dense(1))...
+model.add(Dense(units=1))
+#model.add(TimeDistributed(Dense(1))) # There is no difference between this and model.add(Dense(1))...
 model.compile(optimizer=Adam(learning_rate=wandb.config['learning_rate']), loss='mean_squared_error', metrics=['mse','acc'])
 model.summary()
 
@@ -127,21 +128,4 @@ history = model.fit(train_data, train_label,
 testPredict = model.predict(test_data)
 
 #   Model Evaluate
-#loss, accuracy = model.evaluate(testX,output_test)
-
-#   Save the model
-#joblib.dump(model, 'GRU_model.joblib')
-
-#   Plot the predicted and "true" output and plot training and validation losses
-loss=history.history['loss']
-val_loss=history.history['val_loss']
-epochs=range(1,len(loss)+1)
-plt.figure()
-plt.plot(epochs, loss,'b', label='Training loss')
-plt.plot(epochs, val_loss,'r', label='Validation loss')
-plt.title('Training and validation losses')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.xscale('log')
-plt.legend()
-plt.show()
+loss, _, accuracy = model.evaluate(test_data, test_label)
