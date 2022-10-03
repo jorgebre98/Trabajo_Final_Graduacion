@@ -36,13 +36,13 @@ wandb.init(project="Prueba",
            id='Mimetic_RNA_1')
 wandb.config = {
     "epochs": 500,
-    "batch_size": 100,
+    "batch_size": 10,
     "learning_rate":0.001,
     "Dropout": 0.35
 }
 
 #   ******************* Process the Dataset *******************
-root = '/Users/jorge/Documents/TEC/TFG/Datos_Recolectados/'
+root = '../Datos_Recolectados/'
 Dir = os.listdir(root)
 pwm = np.array([])
 angle = np.array([])
