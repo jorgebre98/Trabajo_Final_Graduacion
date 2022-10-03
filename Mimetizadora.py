@@ -36,14 +36,12 @@ wandb.init(project="Prueba",
            id='Probando W&B')
 wandb.config = {
     "epochs": 500,
-    "batch_size": 8,
+    "batch_size": 100,
     "learning_rate":0.001,
-    "window": 100
+    "Dropout": 0.35
 }
 
 #   ******************* Process the Dataset *******************
-root = '/Users/jorge/Documents/TEC/TFG/Datos_Recolectados/'
-
 root = '/Users/jorge/Documents/TEC/TFG/Datos_Recolectados/'
 Dir = os.listdir(root)
 pwm = np.array([])
@@ -60,7 +58,7 @@ for filename in Dir:
 
 X_train = []
 Y_train = []
-window = wandb.config['window']
+window = wandb.config['batch_size']
 
 #For each element of training set, we have "window" previous training set elements
 print('Accommodating data for the GRU network',flush=True)
@@ -93,9 +91,9 @@ for i,j in zip(X_train[val_lenght:],Y_train[val_lenght:]):
 train_data, val_data, test_data = np.array(train_data), np.array(val_data), np.array(test_data)
 train_label, val_label, test_label = np.array(train_label), np.array(val_label), np.array(test_label)
 
-print('El total de datos de entrenamiento es: ', len(train_data), flush=True)
-print('El total de datos de validación es: ', len(val_data), flush=True)
-print('El total de datos de prueba es: ', len(test_data), flush=True)
+print('Total train data is: ', len(train_data), flush=True)
+print('Total validation data is: ', len(val_data), flush=True)
+print('Total test data is: ', len(test_data), flush=True)
 
 # Reshape the arrays (n,window,1). Where n is the total amount of data in the array
 print('Reshape arrays to tensors',flush=True)
@@ -110,19 +108,20 @@ print('******************* Finish *******************',flush=True)
 clear_session()
 model = Sequential()
 model.add(GRU(64, input_shape=(X_train.shape[1],1),return_sequences=True))
-model.add(Dropout(0.35))
+model.add(Dropout(wandb.config['Dropout']))
 model.add(GRU(64, input_shape=(X_train.shape[1],1),return_sequences=True))
-model.add(Dropout(0.35))
+model.add(Dropout(wandb.config['Dropout']))
 model.add(TimeDistributed(Dense(1))) # There is no difference between this and model.add(Dense(1))...
 model.compile(optimizer=Adam(learning_rate=0.001), loss='mean_squared_error', metrics=['mse','acc'])
 model.summary()
 
 #   Model Training
 history = model.fit(train_data, train_label,
-                    epochs=500, batch_size=8,
+                    epochs=wandb.config['epochs'],
+                    batch_size=wandb.config['batch_size'],
                     validation_data = (val_data,val_label),
                     verbose=2,
-                    callbacks=[WandbCallback()]
+                    callbacks=[WandbCallback(save_model = False)]
                     )
 #   Prediction
 testPredict = model.predict(test_data)
@@ -131,7 +130,7 @@ testPredict = model.predict(test_data)
 #loss, accuracy = model.evaluate(testX,output_test)
 
 #   Save the model
-joblib.dump(model, 'GRU_model.joblib')
+#joblib.dump(model, 'GRU_model.joblib')
 
 #   Plot the predicted and "true" output and plot training and validation losses
 loss=history.history['loss']
