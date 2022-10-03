@@ -112,7 +112,7 @@ model.add(Dropout(wandb.config['Dropout']))
 model.add(GRU(64, input_shape=(X_train.shape[1],1),return_sequences=True))
 model.add(Dropout(wandb.config['Dropout']))
 model.add(TimeDistributed(Dense(1))) # There is no difference between this and model.add(Dense(1))...
-model.compile(optimizer=Adam(learning_rate=Dropout(wandb.config['learning_rate']), loss='mean_squared_error', metrics=['mse','acc'])
+model.compile(optimizer=Adam(learning_rate=wandb.config['learning_rate']), loss='mean_squared_error', metrics=['mse','acc'])
 model.summary()
 
 #   Model Training
