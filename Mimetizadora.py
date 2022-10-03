@@ -28,12 +28,12 @@ warnings.filterwarnings('ignore')
 import wandb
 from wandb.keras import WandbCallback
 
-wandb login('52c82ce2e50072d968a0a256c901929128147287')
+#wandb.login('52c82ce2e50072d968a0a256c901929128147287')
 wandb.init(project="Prueba", 
            entity="mimetic-rna", 
-           name='Probando W&B',
+           name='Mimetic_RNA_1',
            resume='Allow', 
-           id='Probando W&B')
+           id='Mimetic_RNA_1')
 wandb.config = {
     "epochs": 500,
     "batch_size": 100,
@@ -112,7 +112,7 @@ model.add(Dropout(wandb.config['Dropout']))
 model.add(GRU(64, input_shape=(X_train.shape[1],1),return_sequences=True))
 model.add(Dropout(wandb.config['Dropout']))
 model.add(TimeDistributed(Dense(1))) # There is no difference between this and model.add(Dense(1))...
-model.compile(optimizer=Adam(learning_rate=0.001), loss='mean_squared_error', metrics=['mse','acc'])
+model.compile(optimizer=Adam(learning_rate=Dropout(wandb.config['learning_rate']), loss='mean_squared_error', metrics=['mse','acc'])
 model.summary()
 
 #   Model Training
