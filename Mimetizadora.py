@@ -1,21 +1,25 @@
-# # ************************************************************* #
-# #               Copyright (C) 2022 Jorge Brenes Alfaro.
-# #               EL5617 Trabajo Final de Graduación.
-# #               Escuela de Ingeniería Electrónica.
-# #               Tecnológico de Costa Rica.
-# # ************************************************************* #
+#!/usr/bin/env python
+# coding: utf-8
 
-#   This file is responsible for generating the mimetic neural network (MNN). First, the data
-#   collected from the PAHM is processed, which is reshaped as necessary for the network.
-#   Next, the model is developed using recurrent neural networks (RNN), specifically the GRU.
+# ## Tecnológico de Costa Rica
+# 
+# ### Autor: Jorge Andrés Brenes Alfaro
+# 
+# ## Red mimetizadora
+# 
+# 
 
-#Libraries to proccess data
+# ## 1. Bibliotecas
+
+# In[1]:
+
+
 import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-#Libraries to create RNAM
+from sklearn.preprocessing import MaxAbsScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.backend import clear_session
 from tensorflow.keras.optimizers import RMSprop, Adam
@@ -24,25 +28,70 @@ from tensorflow.keras.layers import Dense, Dropout, GRU, TimeDistributed
 import warnings
 warnings.filterwarnings('ignore')
 
-import wandb
-from wandb.keras import WandbCallback
 
-#wandb.login('52c82ce2e50072d968a0a256c901929128147287')
-wandb.init(project="Prueba", 
-           entity="mimetic-rna", 
-           name='Mimetic_RNA_1',
-           resume='Allow', 
-           id='Mimetic_RNA_1')
-wandb.config = {
-    "epochs": 5,
-    "batch_size": 32,
-    "learning_rate": 0.001,
-    "window": 100,
-    "Dropout": 0.35
-}
+# ## 2. Dataset 
 
-#   ******************* Process the Dataset *******************
-root = '../Datos_Recolectados/'
+# In[2]:
+
+
+def normalizer(angle,action):
+    if action == 'norm':
+        norm = MaxAbsScaler()
+        angle_normalize = norm.fit_transform(angle)
+    else:
+        angle_normalize = angle.inverse_transform(angle)
+    return angle_normalize
+
+
+# In[3]:
+
+
+# Separate the values in train, validation and test data/label
+def separate_values(X_train, Y_train):
+    train_data, val_data, test_data = [],[],[]
+    train_label, val_label, test_label = [],[],[]
+    train_lenght = int(len(X_train)*3/5)
+    val_lenght = int(len(X_train)*4/5)
+    
+    # Use 3/5 of the total data set for training
+    # and 1/5 for validation and testing.
+    for i,j in zip(X_train[:train_lenght],Y_train[:train_lenght]):
+        train_data.append(i)
+        train_label.append(j)
+    
+    for i,j in zip(X_train[train_lenght:val_lenght],Y_train[train_lenght:val_lenght]):
+        val_data.append(i)
+        val_label.append(j)
+    
+    for i,j in zip(X_train[val_lenght:],Y_train[val_lenght:]):
+        test_data.append(i)
+        test_label.append(j)
+    
+    train_data, val_data, test_data = np.array(train_data), np.array(val_data), np.array(test_data)
+    train_label, val_label, test_label = np.array(train_label), np.array(val_label), np.array(test_label)
+        
+    return train_data, train_label, val_data, val_label, test_data, test_label
+
+
+# In[4]:
+
+
+def create_dataset (X, Y, look_back = 1):
+    Xs, ys = [], []
+    
+    for i in range(len(X)-look_back):
+        v = X[i:i+look_back]
+        Xs.append(v)
+        #ys.append(X[i+look_back])
+        ys.append(Y[i+look_back])
+    
+    return np.reshape(np.array(Xs),(np.array(Xs).shape[0],np.array(Xs).shape[1],1)), np.reshape(np.array(ys),(-1))
+
+
+# In[5]:
+
+
+root = '/Users/jorge/Documents/TEC/TFG/Datos_Recolectados/'
 Dir = os.listdir(root)
 pwm = np.array([])
 angle = np.array([])
@@ -56,76 +105,131 @@ for filename in Dir:
     pwm = np.append(pwm, np.concatenate((np.zeros(100),files.values[:,2])))
     angle = np.append(angle, np.concatenate((np.zeros(100),files.values[:,3])))
 
-X_train = []
-Y_train = []
-window = wandb.config['batch_size']
-
-#For each element of training set, we have "window" previous training set elements
-print('Accommodating data for the GRU network',flush=True)
-for i in range(window,pwm.shape[0]):
-    X_train.append(pwm[i-window:i])
-    Y_train.append(angle[i])
-X_train, Y_train = np.array(X_train), np.array(Y_train) # Input and output arrays
-
-# Separate the values in train, validation and test data/label
-train_data, val_data, test_data = [],[],[]
-train_label, val_label, test_label = [],[],[]
-train_lenght = int(len(X_train)*3/5)
-val_lenght = int(len(X_train)*4/5)
-
-# Use 3/5 of the total data set for training 
-# and 1/5 for validation and testing.
-print('Separating data in training, validation and testing',flush=True)
-for i,j in zip(X_train[:train_lenght],Y_train[:train_lenght]):
-    train_data.append(i)
-    train_label.append(j)
-
-for i,j in zip(X_train[train_lenght:val_lenght],Y_train[train_lenght:val_lenght]):
-    val_data.append(i)
-    val_label.append(j)
-    
-for i,j in zip(X_train[val_lenght:],Y_train[val_lenght:]):
-    test_data.append(i)
-    test_label.append(j)
-    
-train_data, val_data, test_data = np.array(train_data), np.array(val_data), np.array(test_data)
-train_label, val_label, test_label = np.array(train_label), np.array(val_label), np.array(test_label)
+train_data, train_label, val_data, val_label, test_data, test_label = separate_values(pwm, angle)
 
 print('Total train data is: ', len(train_data), flush=True)
 print('Total validation data is: ', len(val_data), flush=True)
-print('Total test data is: ', len(test_data), flush=True)
+print('Total testing data is:: ', len(test_data), flush=True)
 
-# Reshape the arrays (n,window,1). Where n is the total amount of data in the array
-print('Reshape arrays to tensors',flush=True)
-train_data = np.reshape(train_data,(train_data.shape[0],train_data.shape[1],1))
-val_data = np.reshape(val_data,(val_data.shape[0],val_data.shape[1],1))
-test_data = np.reshape(test_data,(test_data.shape[0],test_data.shape[1],1))
+print('Normalizing Angle Values')
+train_label = np.reshape(train_label,(train_label.shape[0],1))
+train_target = normalizer(train_label,'norm')
+
+val_label = np.reshape(val_label,(val_label.shape[0],1))
+val_target = normalizer(val_label,'norm')
+
+test_label = np.reshape(test_label,(test_label.shape[0],1))
+test_target = normalizer(test_label,'norm')
+
+print('Accommodating data for the GRU network',flush=True)
+X_train, y_train = create_dataset(train_data, train_target, 4)
+X_val, y_val = create_dataset(val_data, val_target, 4)
+X_test, y_test = create_dataset(test_data, test_target, 4)
+
+print('\nTrain data shape is: ', X_train.shape, flush=True)
+print('Validation data shape is: ', X_val.shape, flush=True)
+print('Testing data shape is:: ', X_test.shape, flush=True)
+print('Train label shape is: ', y_train.shape, flush=True)
+print('Validation label shape is: ', y_val.shape, flush=True)
+print('Testing label shape is:: ', y_test.shape, flush=True)
 print('******************* Finish *******************',flush=True)
 
-#   ******************* Neural Network *******************
-#   Model creation
+
+# ## 3. Neural Network
+
+# ### 3.1 Model Creation
+
+# In[6]:
+
 
 clear_session()
+
+units = 32
 model = Sequential()
-model.add(GRU(units=64, input_shape=(X_train.shape[1],1),return_sequences=True))
-model.add(Dropout(wandb.config['Dropout']))
-model.add(GRU(units=64, input_shape=(X_train.shape[1],1),return_sequences=True))
-model.add(Dropout(wandb.config['Dropout']))
-model.add(Dense(units=1))
-#model.add(TimeDistributed(Dense(1))) # There is no difference between this and model.add(Dense(1))...
-model.compile(optimizer=Adam(learning_rate=wandb.config['learning_rate']), loss='mean_squared_error', metrics=['mse','acc'])
+model.add(GRU (units = units, return_sequences = True, input_shape = [X_train.shape[1], X_train.shape[2]]))
+model.add(Dropout(0.2)) 
+    # Hidden layer
+model.add(GRU(units = units))                 
+model.add(Dropout(0.2))
+model.add(Dense(units = 1)) 
+#Compile model
+model.compile(optimizer='adam',loss='mse')
 model.summary()
 
-#   Model Training
-history = model.fit(train_data, train_label,
-                    epochs=wandb.config['epochs'],
-                    batch_size=wandb.config['batch_size'],
-                    validation_data = (val_data,val_label),
-                    verbose=2,
-                    callbacks=[WandbCallback(save_model = False)]
-                    )
-#   Prediction
-testPredict = model.predict(test_data)
 
-#   Model Evaluate
-loss, _, accuracy = model.evaluate(test_data, test_label)
+# ### 3.2 Model Training
+
+# In[7]:
+
+
+history = model.fit(X_train, y_train, 
+                    epochs = 4, validation_data = [X_val, y_val],
+                    batch_size = 16, verbose = 1)
+
+
+# In[ ]:
+
+
+testPredict = model.predict(X_test)
+
+
+# ### 3.3 Model Evaluate
+
+# In[ ]:
+
+
+def plot_loss (history, model_name):
+    plt.figure(figsize = (10, 6))
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model Train vs Validation Loss for ' + model_name)
+    plt.ylabel('Loss')
+    plt.xlabel('epoch')
+    plt.legend(['Train loss', 'Validation loss'], loc='upper right')
+
+def plot_future(prediction, model_name, y_test):
+    
+    plt.figure(figsize=(10, 6))
+    
+    range_future = len(prediction)
+    plt.figure()
+    plt.plot(np.arange(range_future)[10000:15000], np.array(y_test)[10000:15000], label='Test data')
+    plt.figure()
+    plt.plot(np.arange(range_future)[10000:15000], np.array(prediction)[10000:15000], 'r',label='Prediction')
+    plt.legend(loc='upper left')
+    
+def evaluate_prediction(predictions, actual, model_name):
+    errors = predictions - actual
+    mse = np.square(errors).mean()
+    rmse = np.sqrt(mse)
+    mae = np.abs(errors).mean()
+
+    print(model_name + ':')
+    print('Mean Absolute Error: {:.4f}%'.format(mae*100))
+    print('Root Mean Square Error: {:.4f}%'.format(rmse*100))
+    print('')
+
+
+# In[ ]:
+
+
+plot_loss(history,'GRU')
+
+
+# In[ ]:
+
+
+plot_future(testPredict,'GRU',y_test)
+
+
+# In[ ]:
+
+
+plt.plot(np.reshape(X_test,(-1))[10000:15000])
+
+
+# In[ ]:
+
+
+evaluate_prediction(testPredict,y_test,'GRU')
+
