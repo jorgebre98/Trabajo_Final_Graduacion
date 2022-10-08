@@ -14,9 +14,9 @@ wandb.login()
 
 wandb.init(project="Synthetic PAHM", 
            entity="mimetic-rna", 
-           name='Synthetic PAHM prueba',
+           name='Synthetic PAHM',
            resume='Allow', 
-           id='Synthetic PAHM prueba')
+           id='Synthetic PAHM')
 wandb.config = {
     "epochs": 3500,
     "batch_size": 8,
