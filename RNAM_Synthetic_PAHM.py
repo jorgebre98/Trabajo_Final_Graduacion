@@ -14,12 +14,12 @@ wandb.login()
 
 wandb.init(project="Synthetic PAHM", 
            entity="mimetic-rna", 
-           name='Synthetic PAHM simple',
+           name='Synthetic PAHM simple 2',
            resume='Allow', 
-           id='Synthetic PAHM simple')
+           id='Synthetic PAHM simple 2')
 wandb.config = {
-    "epochs": 3500,
-    "batch_size": 8,
+    "epochs": 4000,
+    "batch_size": 1,
     "units": 32,
     "learning_rate":0.001,
     "Dropout": 0.35
@@ -33,7 +33,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('lossGRU2.png')
+    plt.savefig('lossGRU_3.png')
 
 def plot_future(prediction, y_test):
     plt.figure(figsize=(10, 6))
@@ -44,7 +44,7 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
-    plt.savefig('PredictGRU.png')
+    plt.savefig('PredictGRU_3.png')
     
 def evaluate_prediction(predictions, actual):
     errors = predictions - actual
@@ -61,7 +61,7 @@ B = np.matrix([[0],[2965]])
 C = np.matrix([[1, 0]])
 
 # Number of time samples
-time = 2000
+time = 20000
 sampling = 0.02
 
 
