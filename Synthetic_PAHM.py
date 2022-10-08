@@ -13,13 +13,14 @@
 
 #   Libraries
 import numpy as np
-from numpy.linalg import inv
-import matplotlib.pyplot as plt
 import pandas as pd
+import matplotlib.pyplot as plt
+
+from numpy.linalg import inv
 
 #   Function to discrete the PAHM's dynamic.
 #   Discretize by backward euler method.
-def dinamica_modelo(A,B,C,cond_initial,input_sequence, time_steps,h):
+def dynamic_model(A,B,C,cond_initial,input_sequence, time_steps,h):
     I = np.identity(A.shape[0])
     Ad = inv(I - h*A)
     Bd = Ad*h*B
@@ -59,7 +60,7 @@ def Synthetic_PAHM(filename):
     initial_state = np.array([[0],[0]])
 
     # Convert to discrete time the response of the PAHM
-    X,Y = dinamica_modelo(A,B,C,initial_state,input_seq,tiempo,sampling)
+    X,Y = model_dynamic(A,B,C,initial_state,input_seq,tiempo,sampling)
     plt.subplot(1,2,1)
     plt.plot(input_seq)
     plt.xlabel('Time (ms)')
@@ -72,5 +73,5 @@ def Synthetic_PAHM(filename):
     plt.title('Step response')
     plt.show()
 
-filename = str(input('Nombre de archivo: '))
-Synthetic_PAHM(filename)
+#filename = str(input('Nombre de archivo: '))
+#Synthetic_PAHM(filename)
