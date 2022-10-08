@@ -14,9 +14,9 @@ wandb.login()
 
 wandb.init(project="Synthetic PAHM", 
            entity="mimetic-rna", 
-           name='Synthetic PAHM',
+           name='Synthetic PAHM simple',
            resume='Allow', 
-           id='Synthetic PAHM')
+           id='Synthetic PAHM simple')
 wandb.config = {
     "epochs": 3500,
     "batch_size": 8,
@@ -33,13 +33,13 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('lossGRU.png')
+    plt.savefig('lossGRU2.png')
 
 def plot_future(prediction, y_test):
     plt.figure(figsize=(10, 6))
     range_future = np.arange(prediction.shape[1])
     plt.plot(range_future, y_test[0,:], label='Test data', color = [1, 0.502, 0])
-    plt.plot(range_future, prediction[0,:,0], label='Prediction',  color = [0.0502, 0.706, 0.949])
+    plt.plot(range_future, prediction[0,:], label='Prediction',  color = [0.0502, 0.706, 0.949])
     plt.title('Predicted and true output')
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
@@ -110,9 +110,9 @@ tmp_test = np.concatenate((input_seq_test, np.zeros(shape=(input_seq_test.shape[
 tmp_test = np.concatenate((x0_test.T,tmp_test), axis=0)
 test_data = np.reshape(tmp_test, (1,tmp_test.shape[0],tmp_test.shape[1])) # Test data
 
-print('Total train data is: ', len(train_data), flush=True)
-print('Total validation data is: ', len(val_data), flush=True)
-print('Total testing data is:: ', len(test_data), flush=True)
+print('Total train data is: ', train_data.shape[0], flush=True)
+print('Total validation data is: ', val_data.shape[0], flush=True)
+print('Total testing data is:: ', test_data.shape[0], flush=True)
 print('\nTrain data shape is: ', train_data.shape, flush=True)
 print('Validation data shape is: ', val_data.shape, flush=True)
 print('Testing data shape is:: ', test_data.shape, flush=True)
@@ -122,13 +122,13 @@ print('Testing label shape is:: ', test_label.shape, flush=True)
 
 # ***************** Neuronal Network *****************
 # Model Creation
-model=Sequential()
+model = Sequential()
 model.add(GRU(units=wandb.config['units'], input_shape=(train_data.shape[1],train_data.shape[2]),return_sequences=True))
-model.add(Dropout(wandb.config['Dropout']))
+#model.add(Dropout(wandb.config['Dropout']))
 
 # Hidden Layer
-model.add(GRU(units=wandb.config['units']))
-model.add(Dropout(wandb.config['Dropout']))
+#model.add(GRU(units=wandb.config['units']))
+#model.add(Dropout(wandb.config['Dropout']))
 model.add(Dense(1))
 
 # Compile model
