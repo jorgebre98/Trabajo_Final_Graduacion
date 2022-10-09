@@ -5,7 +5,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 #Libraries to create de RNAM
-from sklearn.preprocessing import MaxAbsScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, GRU
 from tensorflow.keras.optimizers import Adam, RMSprop
@@ -81,7 +80,7 @@ def separate_values(X_train, Y_train):
     
     return train_data, train_label, val_data, val_label, test_data, test_label
 
-root = '/Users/jorge/Documents/TEC/TFG/Datos_Recolectados/'
+root = '../Datos_Recolectados/'
 Dir = os.listdir(root)
 pwm = np.array([])
 angle = np.array([])
