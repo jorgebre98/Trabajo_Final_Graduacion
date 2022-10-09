@@ -39,12 +39,12 @@ wandb.login()
 
 wandb.init(project="RNAM Real", 
            entity="mimetic-rna", 
-           name='RNAM Real 1',
+           name='RNAM Real mult layers',
            resume='Allow', 
-           id='RNAM Real 1')
+           id='RNAM Real mult layers')
 wandb.config = {
     "epochs": 3500,
-    "batch_size": 1,
+    "batch_size": 8,
     "units": 32,
     "learning_rate":0.001,
     "Dropout": 0.2
@@ -59,6 +59,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
+    plt.savefig('Loss_real_2.png')
 
 #   This function plots the actual output vs the output predicted by the model. 
 def plot_future(prediction, y_test):
@@ -70,6 +71,7 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
+    plt.savefig('Prediction_real_2.png')
 
 #   This function calculates performance metrics for regression problems.
 def evaluate_prediction(predictions, actual):
@@ -150,9 +152,9 @@ X_train= np.reshape(tmp_train, (1, tmp_train.shape[0], tmp_train.shape[1])) # Tr
 X_val = np.reshape(tmp_val, (1, tmp_val.shape[0], tmp_val.shape[1])) # Validation Data
 X_test = np.reshape(tmp_test, (1, tmp_test.shape[0], tmp_test.shape[1])) # Test Data
 
-print('Total train data is: ', train_data.shape[1], flush=True)
-print('Total validation data is: ', val_data.shape[1], flush=True)
-print('Total testing data is:: ', test_data.shape[1], flush=True)
+print('Total train data is: ', X_train.shape[1], flush=True)
+print('Total validation data is: ', X_val.shape[1], flush=True)
+print('Total testing data is:: ', X_test.shape[1], flush=True)
 
 print('\nTrain data shape is: ', X_train.shape, flush=True)
 print('Validation data shape is: ', X_val.shape, flush=True)
@@ -166,6 +168,9 @@ print('******************* Finish *******************',flush=True)
 #   Model Creation
 model=Sequential()
 model.add(GRU(units = wandb.config['units'], input_shape=(None, X_train.shape[2]), return_sequences=True))
+model.add(Dropout(wandb.config['Dropout']))
+model.add(GRU(units=wandb.config['units']))
+model.add(Dropout(wandb.config['Dropout']))
 model.add(Dense(1))
 #   Compile model
 model.compile(optimizer = RMSprop(learning_rate = wandb.config['learning_rate']),
@@ -177,7 +182,7 @@ history = model.fit(X_train, y_train ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (X_val, y_val),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-model.save('RNAM_real.h5')
+model.save('RNAM_real_multlayer.h5')
 
 # Model Prediction
 testPredict = model.predict(X_test)
