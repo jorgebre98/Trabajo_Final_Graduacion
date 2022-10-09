@@ -15,7 +15,6 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
 from numpy.linalg import inv
 
 #   Function to discrete the PAHM's dynamic.
@@ -73,5 +72,5 @@ def Synthetic_PAHM(filename):
     plt.title('Step response')
     plt.show()
 
-#filename = str(input('Nombre de archivo: '))
-#Synthetic_PAHM(filename)
+filename = str(input('Nombre de archivo: '))
+Synthetic_PAHM(filename)
