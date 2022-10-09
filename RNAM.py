@@ -33,7 +33,7 @@ from tensorflow.keras.optimizers import Adam, RMSprop
 import wandb
 from wandb.keras import WandbCallback
 
-#   The parameters are archived in weights and biases (W&B), as well as the results of the
+#   The parameters are archived in Weights and Biases (W&B), as well as the results of the
 #   execution for further evaluation.
 wandb.login()
 
