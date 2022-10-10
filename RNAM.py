@@ -39,9 +39,9 @@ wandb.login()
 
 wandb.init(project="RNAM Real", 
            entity="mimetic-rna", 
-           name='RNAM Real mult layers',
+           name='RNAM Real Complete',
            resume='Allow', 
-           id='RNAM Real mult layers')
+           id='RNAM Real Complete')
 wandb.config = {
     "epochs": 3500,
     "batch_size": 8,
@@ -111,7 +111,8 @@ def separate_values(X_train, Y_train):
 
 #   Read all the .csv files and make an nx4 array
 #   Next, separate the pwm value and angle in their respective arrays.
-root = '../Datos_Recolectados/'
+#root = '../Datos_Recolectados/'
+root = '../Data_Complete/'
 Dir = os.listdir(root)
 pwm = np.array([])
 angle = np.array([])
@@ -168,9 +169,9 @@ print('******************* Finish *******************',flush=True)
 #   Model Creation
 model=Sequential()
 model.add(GRU(units = wandb.config['units'], input_shape=(None, X_train.shape[2]), return_sequences=True))
-model.add(Dropout(wandb.config['Dropout']))
-model.add(GRU(units=wandb.config['units']))
-model.add(Dropout(wandb.config['Dropout']))
+#model.add(Dropout(wandb.config['Dropout']))
+#model.add(GRU(units=wandb.config['units']))
+#model.add(Dropout(wandb.config['Dropout']))
 model.add(Dense(1))
 #   Compile model
 model.compile(optimizer = RMSprop(learning_rate = wandb.config['learning_rate']),
@@ -182,7 +183,7 @@ history = model.fit(X_train, y_train ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (X_val, y_val),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-model.save('RNAM_real_multlayer.h5')
+model.save('RNAM_real_complete.h5')
 
 # Model Prediction
 testPredict = model.predict(X_test)
