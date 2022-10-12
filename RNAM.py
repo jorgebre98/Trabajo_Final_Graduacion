@@ -26,9 +26,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 #Libraries to create de MNN
+from sklearn.preprocessing import MaxAbsScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, GRU
 from tensorflow.keras.optimizers import Adam, RMSprop
+
 
 import wandb
 from wandb.keras import WandbCallback
@@ -83,7 +85,7 @@ def evaluate_prediction(predictions, actual):
     print('Mean Absolute Error: {:.4f}.'.format(mae))
     print('Root Mean Square Error: {:.4f}.'.format(rmse))
 
-#   Separate the values in train, validation and test data/label
+#   Separate the values in train, validation and test data/label.
 def separate_values(X_train, Y_train):
     train_data, val_data, test_data = [], [], []
     train_label, val_label, test_label = [], [], []
@@ -109,11 +111,11 @@ def separate_values(X_train, Y_train):
     
     return train_data, train_label, val_data, val_label, test_data, test_label
 
-#   Read all the .csv files and make an nx4 array
+#   Read all the .csv files and make an nx4 array.
 #   Next, separate the pwm value and angle in their respective arrays.
-#root = '../Datos_Recolectados/'
 root = '../Datos_Recolectados/'
 Dir = os.listdir(root)
+norm = MaxAbsScaler()
 pwm = np.array([])
 angle = np.array([])
 
@@ -129,17 +131,17 @@ train_data, train_label, val_data, val_label, test_data, test_label = separate_v
 #   ***************** Create the training/validation/test data *****************
 print('Accommodating data for the GRU network',flush=True)
 
-input_seq_train = train_data # Input sequence for the train
-input_seq_val = val_data # Input sequence for validation
-input_seq_test = test_data # Input sequence for test
+input_seq_train = train_data    # Input sequence for the train.
+input_seq_val = val_data         # Input sequence for validation.
+input_seq_test = test_data       # Input sequence for test.
 
-train_label = np.reshape(train_label, (1,train_label.shape[0]))
-val_label = np.reshape(val_label, (1,val_label.shape[0]))
-test_label = np.reshape(test_label, (1,test_label.shape[0]))
+train_label = norm.fit_transform(np.reshape(train_label, (train_label.shape[0],1)))     # Normalize angle and reshape (nx1).
+val_label = norm.fit_transform(np.reshape(val_label, (val_label.shape[0],1)))            # Normalize angle and reshape (nx1).
+test_label = norm.fit_transform(np.reshape(test_label, (test_label.shape[0],1)))          # Normalize angle and reshape (nx1).
 
-y_train = np.reshape(train_label.T, (1, train_label.T.shape[0], 1)) # Label train data
-y_val = np.reshape(val_label.T, (1, val_label.T.shape[0], 1)) # Label train data
-y_test = np.reshape(test_label.T, (1, test_label.T.shape[0], 1)) # Label train data
+y_train = np.reshape(train_label.T, (1, train_label.shape[0], 1))     # Label train data.
+y_val = np.reshape(val_label.T, (1, val_label.shape[0], 1))            # Label train data.
+y_test = np.reshape(test_label.T, (1, test_label.shape[0], 1))          # Label train data.
 
 input_seq_train = np.reshape(input_seq_train,(input_seq_train.shape[0], 1))
 input_seq_val = np.reshape(input_seq_val,(input_seq_val.shape[0], 1))
@@ -149,9 +151,9 @@ tmp_train = np.concatenate((input_seq_train, np.zeros(shape = (input_seq_train.s
 tmp_val = np.concatenate((input_seq_val, np.zeros(shape = (input_seq_val.shape[0], 1))), axis=1)
 tmp_test = np.concatenate((input_seq_test, np.zeros(shape=(input_seq_test.shape[0], 1))), axis=1)
 
-X_train= np.reshape(tmp_train, (1, tmp_train.shape[0], tmp_train.shape[1])) # Train Data
-X_val = np.reshape(tmp_val, (1, tmp_val.shape[0], tmp_val.shape[1])) # Validation Data
-X_test = np.reshape(tmp_test, (1, tmp_test.shape[0], tmp_test.shape[1])) # Test Data
+X_train= np.reshape(tmp_train, (1, tmp_train.shape[0], tmp_train.shape[1]))     # Train Data.
+X_val = np.reshape(tmp_val, (1, tmp_val.shape[0], tmp_val.shape[1]))             # Validation Data.
+X_test = np.reshape(tmp_test, (1, tmp_test.shape[0], tmp_test.shape[1]))          # Test Data.
 
 print('Total train data is: ', X_train.shape[1], flush=True)
 print('Total validation data is: ', X_val.shape[1], flush=True)
@@ -170,12 +172,12 @@ print('******************* Finish *******************',flush=True)
 model=Sequential()
 model.add(GRU(units = wandb.config['units'], input_shape=(None, X_train.shape[2]), return_sequences=True))
 #model.add(Dropout(wandb.config['Dropout']))
-#model.add(GRU(units=wandb.config['units']))
+model.add(GRU(units=wandb.config['units']))
 #model.add(Dropout(wandb.config['Dropout']))
 model.add(Dense(1))
 #   Compile model
 model.compile(optimizer = RMSprop(learning_rate = wandb.config['learning_rate']),
-              loss = 'mean_squared_error', metrics = ['mse'])
+              loss = 'mean_absolute_error', metrics = ['mae'])
 model.summary()
 
 #   Train Model
