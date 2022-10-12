@@ -39,12 +39,12 @@ wandb.login()
 
 wandb.init(project="RNAM Real", 
            entity="mimetic-rna", 
-           name='RNAM Real Complete',
+           name='RNAM con random',
            resume='Allow', 
-           id='RNAM Real Complete')
+           id='RNAM con random')
 wandb.config = {
-    "epochs": 3500,
-    "batch_size": 8,
+    "epochs": 5000,
+    "batch_size": 1,
     "units": 32,
     "learning_rate":0.001,
     "Dropout": 0.2
@@ -59,7 +59,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('Loss_real_2.png')
+    plt.savefig('Loss_random.png')
 
 #   This function plots the actual output vs the output predicted by the model. 
 def plot_future(prediction, y_test):
@@ -71,7 +71,7 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
-    plt.savefig('Prediction_real_2.png')
+    plt.savefig('Prediction_random.png')
 
 #   This function calculates performance metrics for regression problems.
 def evaluate_prediction(predictions, actual):
@@ -112,7 +112,7 @@ def separate_values(X_train, Y_train):
 #   Read all the .csv files and make an nx4 array
 #   Next, separate the pwm value and angle in their respective arrays.
 #root = '../Datos_Recolectados/'
-root = '../Data_Complete/'
+root = '../Datos_Recolectados/'
 Dir = os.listdir(root)
 pwm = np.array([])
 angle = np.array([])
@@ -183,7 +183,7 @@ history = model.fit(X_train, y_train ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (X_val, y_val),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-model.save('RNAM_real_complete.h5')
+model.save('RNAM_random.h5')
 
 # Model Prediction
 testPredict = model.predict(X_test)
