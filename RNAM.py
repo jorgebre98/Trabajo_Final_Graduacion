@@ -46,7 +46,7 @@ wandb.init(project="RNAM Real",
            id='RNAM con random')
 wandb.config = {
     "epochs": 5000,
-    "batch_size": 1,
+    "batch_size": 8,
     "units": 32,
     "learning_rate":0.001,
     "Dropout": 0.2
