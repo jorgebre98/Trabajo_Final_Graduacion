@@ -41,9 +41,9 @@ wandb.login()
 
 wandb.init(project="RNAM Real", 
            entity="mimetic-rna", 
-           name='RNAM con random',
+           name='RNAM random',
            resume='Allow', 
-           id='RNAM con random')
+           id='RNAM random')
 wandb.config = {
     "epochs": 5000,
     "batch_size": 8,
@@ -172,7 +172,7 @@ print('******************* Finish *******************',flush=True)
 model=Sequential()
 model.add(GRU(units = wandb.config['units'], input_shape=(None, X_train.shape[2]), return_sequences=True))
 #model.add(Dropout(wandb.config['Dropout']))
-model.add(GRU(units=wandb.config['units']))
+#model.add(GRU(units=wandb.config['units']))
 #model.add(Dropout(wandb.config['Dropout']))
 model.add(Dense(1))
 #   Compile model
