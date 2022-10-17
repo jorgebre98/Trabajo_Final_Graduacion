@@ -1,9 +1,9 @@
-# ************************************************************* #
-#               Copyright (C) 2022 Jorge Brenes Alfaro.
-#               EL5617 Trabajo Final de Graduación.
-#               Escuela de Ingeniería Electrónica.
-#               Tecnológico de Costa Rica.
-# ************************************************************* #
+# ************************************************************************************************************************* #
+#                                           Copyright (C) 2022 Jorge Brenes Alfaro.
+#                                           EL5617 Trabajo Final de Graduación.
+#                                           Escuela de Ingeniería Electrónica.
+#                                           Tecnológico de Costa Rica.
+# *************************************************************************************************************************** #
 
 #   This file contains the timer class retreieve from [1]. It purpose is to call a function a number
 #   of times for a given time.
