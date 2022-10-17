@@ -1,9 +1,9 @@
-# ************************************************************* #
-#               Copyright (C) 2022 Jorge Brenes Alfaro.
-#               EL5617 Trabajo Final de Graduación.
-#               Escuela de Ingeniería Electrónica.
-#               Tecnológico de Costa Rica.
-# ************************************************************* #
+# ************************************************************************************************************************* #
+#                                           Copyright (C) 2022 Jorge Brenes Alfaro.
+#                                           EL5617 Trabajo Final de Graduación.
+#                                           Escuela de Ingeniería Electrónica.
+#                                           Tecnológico de Costa Rica.
+# *************************************************************************************************************************** #
 
 #   This file is responsible for transmit and receive the PAHM data. For the generation, 2 bytes
 #   corresponding to the value of the PWM are sent and 4 bytes corresponding to the value

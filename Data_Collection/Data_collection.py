@@ -1,9 +1,9 @@
-# ************************************************************* #
-#               Copyright (C) 2022 Jorge Brenes Alfaro.
-#               EL5617 Trabajo Final de Graduación.
-#               Escuela de Ingeniería Electrónica.
-#               Tecnológico de Costa Rica.
-# ************************************************************* #
+# ************************************************************************************************************************* #
+#                                           Copyright (C) 2022 Jorge Brenes Alfaro.
+#                                           EL5617 Trabajo Final de Graduación.
+#                                           Escuela de Ingeniería Electrónica.
+#                                           Tecnológico de Costa Rica.
+# *************************************************************************************************************************** #
 
 #   This file is responsible for collecting the PAHM data. To do this, this file
 #   makes use of the TransmitReceive and RepeatedTimer classes, which are located in

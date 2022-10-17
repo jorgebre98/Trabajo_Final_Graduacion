@@ -1,9 +1,9 @@
-# ************************************************************* #
-#               Copyright (C) 2022 Jorge Brenes Alfaro.
-#               EL5617 Trabajo Final de Graduación.
-#               Escuela de Ingeniería Electrónica.
-#               Tecnológico de Costa Rica.
-# ************************************************************* #
+# ************************************************************************************************************************* #
+#                                           Copyright (C) 2022 Jorge Brenes Alfaro.
+#                                           EL5617 Trabajo Final de Graduación.
+#                                           Escuela de Ingeniería Electrónica.
+#                                           Tecnológico de Costa Rica.
+# *************************************************************************************************************************** #
 #
 #   The presen code is based in H. Kapasi, 2022. "Modeling Non-Linear Dynamic Systems with Neural Networks", 2022. [Online].
 #   Available in: https://towardsdatascience.com/modeling-non-linear-dynamic-systems-with-neural-networks-f3761bc92649.

@@ -26,7 +26,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 #Libraries to create de MNN
-from sklearn.preprocessing import MaxAbsScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, GRU
 from tensorflow.keras.optimizers import Adam, RMSprop
@@ -41,18 +40,24 @@ wandb.login()
 
 wandb.init(project="RNAM Real", 
            entity="mimetic-rna", 
-           name='RNAM multiGRU',
+           name='RNAM norm',
            resume='Allow', 
-           id='RNAM multiGRU')
+           id='RNAM norm')
 wandb.config = {
-    "epochs": 5000,
+    "epochs": 3500,
     "batch_size": 1,
     "units": 32,
     "learning_rate":0.0001,
     "Dropout": 0.2
 }
 
-#os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
+#   This function is used to normalized values.
+def normalizer(angle, action):
+    min_val, max_val = -120, 120
+    if action == 'norm':
+        return (angle - min_val)/(max_val - min_val)
+    else:
+        return angle*(max_val - min_val)+min_val
 
 #   This function plots training loss vs validation loss. 
 def plot_loss (history):
@@ -63,7 +68,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('Loss_multiGRU.png')
+    plt.savefig('Loss_norm.png')
 
 #   This function plots the actual output vs the output predicted by the model. 
 def plot_future(prediction, y_test):
@@ -75,7 +80,7 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
-    plt.savefig('Prediction_multiGRU.png')
+    plt.savefig('Prediction_norm.png')
 
 #   This function calculates performance metrics for regression problems.
 def evaluate_prediction(predictions, actual):
@@ -118,7 +123,6 @@ def separate_values(X_train, Y_train):
 #   Next, separate the pwm value and angle in their respective arrays.
 root = '../Datos_Recolectados/'
 Dir = os.listdir(root)
-norm = MaxAbsScaler()
 pwm = np.array([])
 angle = np.array([])
 
@@ -131,6 +135,12 @@ for filename in Dir:
 
 train_data, train_label, val_data, val_label, test_data, test_label = separate_values(pwm, angle)
 
+#   ***************** Normalize values *****************
+print('Normalizing Data',flush=True)
+train_label = normalizer(train_label, 'norm')
+val_label = normalizer(val_label, 'norm')
+test_label = normalizer(test_label, 'norm')
+
 #   ***************** Create the training/validation/test data *****************
 print('Accommodating data for the GRU network',flush=True)
 
@@ -138,13 +148,14 @@ input_seq_train = train_data    # Input sequence for the train.
 input_seq_val = val_data         # Input sequence for validation.
 input_seq_test = test_data       # Input sequence for test.
 
-train_label = norm.fit_transform(np.reshape(train_label, (train_label.shape[0],1)))     # Normalize angle and reshape (nx1).
-val_label = norm.fit_transform(np.reshape(val_label, (val_label.shape[0],1)))            # Normalize angle and reshape (nx1).
-test_label = norm.fit_transform(np.reshape(test_label, (test_label.shape[0],1)))          # Normalize angle and reshape (nx1).
+#   ***************** Reshape label values to (nx1) *****************
+train_label = np.reshape(train_label, (train_label.shape[0],1)))    # Normalize angle and reshape (nx1).
+val_label = np.reshape(val_label, (val_label.shape[0],1))            # Normalize angle and reshape (nx1).
+test_label = np.reshape(test_label, (test_label.shape[0],1))        # Normalize angle and reshape (nx1).
 
-y_train = np.reshape(train_label.T, (1, train_label.shape[0], 1))     # Label train data.
-y_val = np.reshape(val_label.T, (1, val_label.shape[0], 1))            # Label train data.
-y_test = np.reshape(test_label.T, (1, test_label.shape[0], 1))          # Label train data.
+y_train = np.reshape(train_label, (1, train_label.shape[0], 1))       # Label train data.
+y_val = np.reshape(val_label, (1, val_label.shape[0], 1))              # Label train data.
+y_test = np.reshape(test_label, (1, test_label.shape[0], 1))          # Label train data.
 
 input_seq_train = np.reshape(input_seq_train,(input_seq_train.shape[0], 1))
 input_seq_val = np.reshape(input_seq_val,(input_seq_val.shape[0], 1))
@@ -183,6 +194,7 @@ model.add(GRU(100))
 #model.add(Dropout(wandb.config['Dropout']))
 
 model.add(Dense(1))
+
 #   Compile model
 model.compile(optimizer = RMSprop(learning_rate = wandb.config['learning_rate']),
               loss = 'mean_absolute_error', metrics = ['mae'])
@@ -193,12 +205,16 @@ history = model.fit(X_train, y_train ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (X_val, y_val),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-model.save('RNAM_multiGRU.h5')
+model.save('RNAM_norm.h5')
 
-# Model Prediction
+#   Model Prediction
 testPredict = model.predict(X_test)
 
-# Model Evaluate
+#   Desnormalize values
+testPredict = normalizer(testPredict, '')
+y_test = normalizer(y_test, '')
+
+#   Model Evaluate
 plot_loss(history)
-plot_future(testPredict,y_test)
+plot_future(testPredict, y_test)
 evaluate_prediction(testPredict, y_test)
