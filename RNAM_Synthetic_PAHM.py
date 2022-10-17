@@ -45,6 +45,14 @@ wandb.config = {
     "Dropout": 0.35
 }
 
+#   This function is used to normalized values.
+def normalizer(angle, action):
+    min_val, max_val = -120, 120
+    if action == 'norm':
+        return (angle - min_val)/(max_val - min_val)
+    else:
+        return angle*(max_val - min_val)+min_val
+
 #   This function plots training loss vs validation loss. 
 def plot_loss (history):
     plt.figure(figsize = (10, 6))
@@ -76,6 +84,7 @@ def evaluate_prediction(predictions, actual):
     mae = np.abs(errors).mean()
     print('GRU:')
     print('Mean Absolute Error: {:.4f}%'.format(mae))
+    print('Mean Square Error: {:.4f}%.'.format(mse))
     print('Root Mean Square Error: {:.4f}%'.format(rmse))
 
 #   Definition of the model in continuous time.
@@ -84,9 +93,10 @@ B = np.matrix([[0],[2965]])
 C = np.matrix([[1, 0]])
 
 # Number of time samples
-time = 20000
+time = 120000
 sampling = 0.02
 
+print('******************* Creating the Dataset *******************', flush=True)
 # ***************** Create the training data *****************
 input_seq_train = np.random.rand(time,1)*0.25 # Input sequence for the simulation
 x0_train = np.random.rand(2,1)*0.25 # Initial state for simulation
@@ -118,19 +128,24 @@ tmp_val = np.concatenate((x0_val.T,tmp_val), axis = 0)
 val_data = np.reshape(tmp_val, (1,tmp_val.shape[0],tmp_val.shape[1])) # Validation Data
 
 #   ***************** Create the test data *****************
+time = 200
 input_seq_test = np.random.rand(time,1)*0.25
 x0_test = np.random.rand(2,1)*0.25
 
-state_test,test_label = dynamic_model(A, B , C,
+state_test, test_label = dynamic_model(A, B , C,
                                       x0_test, input_seq_test, 
                                       time ,sampling)
 
-output_test = np.reshape(test_label.T,(1,test_label.T.shape[0],1)) # Label test data
+test_label = np.reshape(test_label.T,(1,test_label.T.shape[0],1)) # Label test data
 
 input_seq_test = np.reshape(input_seq_test,(input_seq_test.shape[0],1))
 tmp_test = np.concatenate((input_seq_test, np.zeros(shape=(input_seq_test.shape[0],1))), axis=1)
 tmp_test = np.concatenate((x0_test.T,tmp_test), axis=0)
 test_data = np.reshape(tmp_test, (1,tmp_test.shape[0],tmp_test.shape[1])) # Test data
+
+train_label = normalizer(train_label, 'norm')
+val_label = normalizer(val_label, 'norm')
+test_label = normalizer(test_label, 'norm')
 
 print('Total train data is: ', train_data.shape[0], flush=True)
 print('Total validation data is: ', val_data.shape[0], flush=True)
@@ -167,6 +182,10 @@ model.save('Synthetic_PAHM.h5')
 
 #   Model Prediction
 testPredict = model.predict(test_data)
+
+#   Desnormalizing Values
+testPredict = normalizer(testPredict, '')
+test_label = normalizer(test_label, '')
 
 #   Model Evaluate
 plot_loss(history)
