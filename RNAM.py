@@ -41,16 +41,18 @@ wandb.login()
 
 wandb.init(project="RNAM Real", 
            entity="mimetic-rna", 
-           name='RNAM random',
+           name='RNAM multiGRU',
            resume='Allow', 
-           id='RNAM random')
+           id='RNAM multiGRU')
 wandb.config = {
     "epochs": 5000,
-    "batch_size": 8,
+    "batch_size": 1,
     "units": 32,
-    "learning_rate":0.001,
+    "learning_rate":0.0001,
     "Dropout": 0.2
 }
+
+#os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
 
 #   This function plots training loss vs validation loss. 
 def plot_loss (history):
@@ -61,7 +63,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('Loss_random.png')
+    plt.savefig('Loss_multiGRU.png')
 
 #   This function plots the actual output vs the output predicted by the model. 
 def plot_future(prediction, y_test):
@@ -73,7 +75,7 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
-    plt.savefig('Prediction_random.png')
+    plt.savefig('Prediction_multiGRU.png')
 
 #   This function calculates performance metrics for regression problems.
 def evaluate_prediction(predictions, actual):
@@ -83,6 +85,7 @@ def evaluate_prediction(predictions, actual):
     mae = np.abs(errors).mean()
     print('GRU:')
     print('Mean Absolute Error: {:.4f}.'.format(mae))
+    print('Mean Square Error: {:.4f}.'.format(mse))
     print('Root Mean Square Error: {:.4f}.'.format(rmse))
 
 #   Separate the values in train, validation and test data/label.
@@ -170,10 +173,15 @@ print('******************* Finish *******************',flush=True)
 #   ***************** Neuronal Network *****************
 #   Model Creation
 model=Sequential()
-model.add(GRU(units = wandb.config['units'], input_shape=(None, X_train.shape[2]), return_sequences=True))
+model.add(GRU(1,input_shape=(None,X_train.shape[2]),return_sequences=True))
+model.add(GRU(10,return_sequences=True))
+model.add(GRU(100))
+
+#model.add(GRU(units = wandb.config['units'], input_shape=(None, X_train.shape[2]), return_sequences=True))
 #model.add(Dropout(wandb.config['Dropout']))
 #model.add(GRU(units=wandb.config['units']))
 #model.add(Dropout(wandb.config['Dropout']))
+
 model.add(Dense(1))
 #   Compile model
 model.compile(optimizer = RMSprop(learning_rate = wandb.config['learning_rate']),
@@ -185,7 +193,7 @@ history = model.fit(X_train, y_train ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (X_val, y_val),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-model.save('RNAM_random.h5')
+model.save('RNAM_multiGRU.h5')
 
 # Model Prediction
 testPredict = model.predict(X_test)
