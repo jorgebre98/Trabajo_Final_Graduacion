@@ -34,9 +34,9 @@ wandb.login()
 
 wandb.init(project="Synthetic PAHM", 
            entity="mimetic-rna", 
-           name='Synthetic PAHM simple 2',
+           name='Synthetic PAHM norm',
            resume='Allow', 
-           id='Synthetic PAHM simple 2')
+           id='Synthetic PAHM norm')
 wandb.config = {
     "epochs": 4000,
     "batch_size": 1,
@@ -62,7 +62,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('lossGRU_3.png')
+    plt.savefig('loss_Synth_norm.png')
 
 #   This function plots the actual output vs the output predicted by the model. 
 def plot_future(prediction, y_test):
@@ -74,7 +74,7 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
-    plt.savefig('PredictGRU_3.png')
+    plt.savefig('Predict_Synth_norm.png')
 
 #   This function calculates performance metrics for regression problems.    
 def evaluate_prediction(predictions, actual):

@@ -40,12 +40,12 @@ wandb.login()
 
 wandb.init(project="RNAM Real", 
            entity="mimetic-rna", 
-           name='RNAM random',
+           name='RNAM norm',
            resume='Allow', 
-           id='RNAM random')
+           id='RNAM norm')
 wandb.config = {
-    "epochs": 5000,
-    "batch_size": 8,
+    "epochs": 3500,
+    "batch_size": 1,
     "units": 32,
     "learning_rate":0.001,
     "Dropout": 0.2
@@ -68,7 +68,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('Loss_random.png')
+    plt.savefig('Loss_norm.png')
 
 #   This function plots the actual output vs the output predicted by the model. 
 def plot_future(prediction, y_test):
@@ -80,7 +80,7 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
-    plt.savefig('Prediction_random.png')
+    plt.savefig('Prediction_norm.png')
 
 #   This function calculates performance metrics for regression problems.
 def evaluate_prediction(predictions, actual):
@@ -200,7 +200,7 @@ history = model.fit(X_train, y_train ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (X_val, y_val),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-model.save('RNAM_random.h5')
+model.save('RNAM_norm.h5')
 
 #   Model Prediction
 testPredict = model.predict(X_test)
