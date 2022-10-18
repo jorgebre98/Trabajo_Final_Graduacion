@@ -38,7 +38,7 @@ wandb.init(project="Synthetic PAHM",
            resume='Allow', 
            id='Synthetic PAHM norm')
 wandb.config = {
-    "epochs": 4000,
+    "epochs": 3500,
     "batch_size": 1,
     "units": 32,
     "learning_rate":0.001,
@@ -160,7 +160,7 @@ print('Testing label shape is:: ', test_label.shape, flush=True)
 #   ***************** Neuronal Network *****************
 #   Model Creation
 model = Sequential()
-model.add(GRU(units=wandb.config['units'], input_shape=(train_data.shape[1],train_data.shape[2]),return_sequences=True))
+model.add(GRU(units=wandb.config['units'], input_shape=(None,train_data.shape[2]),return_sequences=True))
 #model.add(Dropout(wandb.config['Dropout']))
 
 #   Hidden Layer
@@ -170,7 +170,7 @@ model.add(Dense(1))
 
 #   Compile model
 model.compile(optimizer = RMSprop(learning_rate = wandb.config['learning_rate']), 
-              loss = 'mean_squared_error', metrics = ['mse'])
+              loss = 'mean_absolute_error', metrics = ['mae'])
 model.summary()
 
 #   Train model
@@ -178,7 +178,7 @@ history = model.fit(train_data, train_label ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (val_data, val_label),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-model.save('Synthetic_PAHM.h5')
+model.save('Synthetic_PAHM_norm.h5')
 
 #   Model Prediction
 testPredict = model.predict(test_data)
