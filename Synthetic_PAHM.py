@@ -72,5 +72,5 @@ def Synthetic_PAHM(filename):
     plt.title('Step response')
     plt.show()
 
-filename = str(input('Nombre de archivo: '))
-Synthetic_PAHM(filename)
+#filename = str(input('Nombre de archivo: '))
+#Synthetic_PAHM(filename)
