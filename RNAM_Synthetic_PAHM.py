@@ -34,13 +34,14 @@ wandb.login()
 
 wandb.init(project="Synthetic PAHM", 
            entity="mimetic-rna", 
-           name='Synthetic PAHM norm_2',
-           resume='Allow', 
-           id='Synthetic PAHM norm_2')
+           name='Synthetic PAHM2',
+           resume='Allow',
+           notes='Se entrena la sintética con 64 neuronas y batch de 32',
+           id='Synthetic PAHM2')
 wandb.config = {
     "epochs": 3500,
-    "batch_size": 1,
-    "units": 32,
+    "batch_size": 32,
+    "units": 64,
     "learning_rate":0.001,
     "Dropout": 0.35
 }

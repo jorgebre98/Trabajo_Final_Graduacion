@@ -40,14 +40,15 @@ wandb.login()
 
 wandb.init(project="RNAM Real", 
            entity="mimetic-rna", 
-           name='RNAM norm',
-           resume='Allow', 
-           id='RNAM norm')
+           name='RNAM_64',
+           resume='Allow',
+           notes="Se entrena la RNA con 64 neuronas en las GRU y datos normalizados de 0 a 1",
+           id='RNAM_64')
 wandb.config = {
     "epochs": 3500,
     "batch_size": 1,
-    "units": 32,
-    "learning_rate":0.0001,
+    "units": 64,
+    "learning_rate":0.001,
     "Dropout": 0.2
 }
 
@@ -68,7 +69,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('Loss_norm.png')
+    plt.savefig('Loss_RNAM64.png')
 
 #   This function plots the actual output vs the output predicted by the model. 
 def plot_future(prediction, y_test):
@@ -80,7 +81,7 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
-    plt.savefig('Prediction_norm.png')
+    plt.savefig('Prediction_RNAM64.png')
 
 #   This function calculates performance metrics for regression problems.
 def evaluate_prediction(predictions, actual):
@@ -149,7 +150,7 @@ input_seq_val = val_data         # Input sequence for validation.
 input_seq_test = test_data       # Input sequence for test.
 
 #   ***************** Reshape label values to (nx1) *****************
-train_label = np.reshape(train_label, (train_label.shape[0],1)))    # Normalize angle and reshape (nx1).
+train_label = np.reshape(train_label, (train_label.shape[0],1))    # Normalize angle and reshape (nx1).
 val_label = np.reshape(val_label, (val_label.shape[0],1))            # Normalize angle and reshape (nx1).
 test_label = np.reshape(test_label, (test_label.shape[0],1))        # Normalize angle and reshape (nx1).
 
@@ -184,13 +185,13 @@ print('******************* Finish *******************',flush=True)
 #   ***************** Neuronal Network *****************
 #   Model Creation
 model=Sequential()
-model.add(GRU(1,input_shape=(None,X_train.shape[2]),return_sequences=True))
-model.add(GRU(10,return_sequences=True))
-model.add(GRU(100))
+model.add(GRU(units=wandb.config['units'],input_shape=(None,X_train.shape[2]),return_sequences=True))
+#model.add(GRU(10,return_sequences=True))
+#model.add(GRU(100))
 
 #model.add(GRU(units = wandb.config['units'], input_shape=(None, X_train.shape[2]), return_sequences=True))
 #model.add(Dropout(wandb.config['Dropout']))
-#model.add(GRU(units=wandb.config['units']))
+model.add(GRU(units=wandb.config['units']))
 #model.add(Dropout(wandb.config['Dropout']))
 
 model.add(Dense(1))
@@ -205,7 +206,7 @@ history = model.fit(X_train, y_train ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (X_val, y_val),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-model.save('RNAM_norm.h5')
+model.save('RNAM_64.h5')
 
 #   Model Prediction
 testPredict = model.predict(X_test)
