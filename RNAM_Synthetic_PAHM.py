@@ -34,14 +34,14 @@ wandb.login()
 
 wandb.init(project="Synthetic PAHM", 
            entity="mimetic-rna", 
-           name='Synthetic PAHM2',
+           name='Synthetic PAHM Probando',
            resume='Allow',
            notes='Se entrena la sintética con 64 neuronas y batch de 32',
-           id='Synthetic PAHM2')
+           id='Synthetic PAHM Probando')
 wandb.config = {
-    "epochs": 3500,
-    "batch_size": 32,
-    "units": 64,
+    "epochs": 2000,
+    "batch_size": 2,
+    "units": 32,
     "learning_rate":0.001,
     "Dropout": 0.35
 }
@@ -162,15 +162,12 @@ print('Testing label shape is:: ', test_label.shape, flush=True)
 #   Model Creation
 model = Sequential()
 model.add(GRU(units=wandb.config['units'], input_shape=(None,train_data.shape[2]),return_sequences=True))
-#model.add(Dropout(wandb.config['Dropout']))
 
 #   Hidden Layer
-#model.add(GRU(units=wandb.config['units']))
-#model.add(Dropout(wandb.config['Dropout']))
 model.add(Dense(1))
 
 #   Compile model
-model.compile(optimizer = RMSprop(learning_rate = wandb.config['learning_rate']), 
+model.compile(optimizer = RMSprop(), 
               loss = 'mean_absolute_error', metrics = ['mae'])
 model.summary()
 
@@ -179,14 +176,14 @@ history = model.fit(train_data, train_label ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (val_data, val_label),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-model.save('Synthetic_PAHM_norm.h5')
+#model.save('Synthetic_PAHM_norm.h5')
 
 #   Model Prediction
 testPredict = model.predict(test_data)
 
 #   Desnormalizing Values
-testPredict = normalizer(testPredict, '')
-test_label = normalizer(test_label, '')
+#testPredict = normalizer(testPredict, '')
+#test_label = normalizer(test_label, '')
 
 #   Model Evaluate
 plot_loss(history)
