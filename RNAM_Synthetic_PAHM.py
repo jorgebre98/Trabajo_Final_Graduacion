@@ -34,13 +34,13 @@ wandb.login()
 
 wandb.init(project="Synthetic PAHM", 
            entity="mimetic-rna", 
-           name='Synthetic PAHM Probando',
+           name='Synthetic PAHM Probando2',
            resume='Allow',
-           notes='Se entrena la sintética con 64 neuronas y batch de 32',
-           id='Synthetic PAHM Probando')
+           notes='Prueba básica de la sintetica',
+           id='Synthetic PAHM Probando2')
 wandb.config = {
     "epochs": 2000,
-    "batch_size": 2,
+    "batch_size": 1,
     "units": 32,
     "learning_rate":0.001,
     "Dropout": 0.35
@@ -94,7 +94,7 @@ B = np.matrix([[0],[2965]])
 C = np.matrix([[1, 0]])
 
 # Number of time samples
-time = 120000
+time = 200
 sampling = 0.02
 
 print('******************* Creating the Dataset *******************', flush=True)
