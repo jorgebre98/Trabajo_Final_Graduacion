@@ -203,6 +203,7 @@ model.add(Dense(1))
 model.compile(optimizer = RMSprop(),
               loss = 'mean_squared_error', metrics = ['mse'])
 model.summary()
+#model.load_weights('.h5')
 
 #   Train Model
 history = model.fit(X_train, y_train ,
