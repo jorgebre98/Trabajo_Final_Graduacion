@@ -39,8 +39,9 @@ parser.add_argument('--project_name', type = str, default = 'RNAM_', help = 'Nam
 parser.add_argument('--units', type = int, default = 32, help = 'Number of the units for the RNAM.')
 parser.add_argument('--epochs', type = int, default = 1000, help = 'Number of epochs for the train.')
 parser.add_argument('--batch_size', type = int, default = 1, help = 'Number of batch for the train.')
-parser.add_argument('--loss_name', type = str, default = 'loss_', help = 'Name for the figure of the loss.')
-parser.add_argument('--predict_name', type = str, default = 'Prediction_', help = 'Name for the figure of the prediction')
+parser.add_argument('--loss_name', type = str, default = 'loss_', help = 'Name for the figure of the loss (.png).')
+parser.add_argument('--predict_name', type = str, default = 'Prediction_', help = 'Name for the figure of the prediction (.png).')
+parser.add_argument('--model_name', type = str, default = 'Model_Synth_', help = 'Name for the RNAM model (.h5).')
 args = parser.parse_args()
 
 #   The parameters are archived in Weights and Biases (W&B), as well as the results of the
@@ -208,7 +209,7 @@ history = model.fit(X_train, y_train ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (X_val, y_val),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-#model.save('RNAM_64.h5')
+model.save(args.model_name)
 
 #   Model Prediction
 testPredict = model.predict(X_test)
