@@ -15,6 +15,7 @@
 #   prediction and evaluation of the model are performed.
 
 # Libraries to process data
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy.linalg import inv
@@ -28,20 +29,30 @@ from Synthetic_PAHM import dynamic_model
 import wandb
 from wandb.keras import WandbCallback
 
+parser = argparse.ArgumentParser(description = 'Mimetic Neural Network for the physic process.')
+parse.add_argument('--project_name', type = str, default = 'RNAM_', help = 'Name of the run.')
+parser.add_argument('--units', type = int, default = 32, description = 'Number of the units for the RNAM.')
+parser.add_argument('--epochs', type = int, default = 1000, help = 'Number of epochs for the train.')
+parser.add_argument('--batch_size', type = int, default = 1, help = 'Number of batch for the train.')
+parser.add_argument('--loss_name', type = str, default = 'loss_',  help = 'RNAM.py')
+parser.add_argument('--predict_name', type = str, default = 'Prediction_',  help = 'Name for the figure of the prediction (.png).')
+parser.add_argument('--model_name', type = str, default = 'Model_Synth_', help = 'Name for the RNAM model (.h5).')
+args = parser.parse_args()
+
 #   The parameters are archived in Weights and Biases (W&B), as well as the results of the
 #   execution for further evaluation.
 wandb.login()
 
-wandb.init(project="Synthetic PAHM", 
-           entity="mimetic-rna", 
-           name='Probando_12',
-           resume='Allow',
-           notes='Prueba básica de la sintetica',
-           id='Probando_12')
+wandb.init(project = "Synthetic PAHM", 
+           entity = "mimetic-rna", 
+           name = args.project_name,
+           resume = 'Allow',
+           #notes = 'Prueba básica de la sintetica',
+           id = args.projec_name)
 wandb.config = {
-    "epochs": 2000,
-    "batch_size": 16,
-    "units": 32,
+    "epochs": args.epochs,
+    "batch_size": args.batch_size,
+    "units": args.units,
     "learning_rate":0.001,
 }
 
@@ -62,7 +73,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('loss_.png')
+    plt.savefig(args.loss_name)
 
 #   This function plots the actual output vs the output predicted by the model. 
 def plot_future(prediction, y_test):
@@ -74,7 +85,7 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
-    plt.savefig('Predict_.png')
+    plt.savefig(args.predict_name)
     
 #   This function calculates performance metrics for regression problems.    
 def evaluate_prediction(predictions, actual):
@@ -83,9 +94,9 @@ def evaluate_prediction(predictions, actual):
     rmse = np.sqrt(mse)
     mae = np.abs(errors).mean()
     print('GRU:')
-    print('Mean Absolute Error: {:.4f}%'.format(mae))
-    print('Mean Square Error: {:.4f}%.'.format(mse))
-    print('Root Mean Square Error: {:.4f}%'.format(rmse))
+    print('Mean Absolute Error: {:.4f}'.format(mae))
+    print('Mean Square Error: {:.4f}.'.format(mse))
+    print('Root Mean Square Error: {:.4f}'.format(rmse))
 
 #   Definition of the model in continuous time.
 A = np.matrix([[0, 1],[-17.97, -0.3801]])
@@ -162,7 +173,8 @@ print('Testing label shape is:: ', test_label.shape, flush=True)
 #   ***************** Neuronal Network *****************
 #   Model Creation
 model = Sequential()
-model.add(GRU(units=wandb.config['units'], input_shape=(None,train_data.shape[2]),return_sequences=True))
+model.add(GRU(units=wandb.config['units'], input_shape=(None,train_data.shape[2]),
+              use_bias = True, return_sequences=True, return_state=True))
 
 #   Hidden Layer
 model.add(Dense(1))
@@ -177,7 +189,7 @@ history = model.fit(train_data, train_label ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (val_data, val_label),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-#model.save('Synthetic_PAHM_norm.h5')
+model.save(args.model_name)
 
 #   Model Prediction
 testPredict = model.predict(test_data)
