@@ -21,6 +21,7 @@
 
 # Libraries to process data
 import os
+import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -30,24 +31,32 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, GRU
 from tensorflow.keras.optimizers import Adam, RMSprop
 
-
 import wandb
 from wandb.keras import WandbCallback
+
+parser = argparse.ArgumentParser(description = 'Mimetic Neural Network for the physic process.')
+parse.add_argument('--project_name', type = str, default = 'RNAM_', help = 'Name of the run.')
+parser.add_argument('--units', type = int, default = 32, description = 'Number of the units for the RNAM.')
+parser.add_argument('--epochs', type = int, default = 1000, help = 'Number of epochs for the train.')
+parser.add_argument('--batch_size', type = int, default = 1, description = 'Number of batch for the train.')
+parser.add_argument('--loss_name', type = str, default = 'loss_', description = 'Name for the figure of the loss.')
+parser.add_argument('--predict_name', type = str, default = 'Prediction_', description = 'Name for the figure of the prediction')
+args = parser.parse_args()
 
 #   The parameters are archived in Weights and Biases (W&B), as well as the results of the
 #   execution for further evaluation.
 wandb.login()
 
-wandb.init(project="RNAM Real", 
-           entity="mimetic-rna", 
-           name='RNAM_Probando_1',
-           resume='Allow',
-           notes="Se entrena la primer prueba",
-           id='RNAM_Probando_1')
+wandb.init(project = "RNAM Real", 
+           entity = "mimetic-rna", 
+           name = args.project_name,
+           resume = 'Allow',
+           #notes = "Se entrena la primer prueba",
+           id = args.project_name)
 wandb.config = {
-    "epochs": 2000,
-    "batch_size": 16,
-    "units": 32,
+    "epochs": args.epochs,
+    "batch_size": args.batch_size,
+    "units": args.units,
     "learning_rate":0.001,
 }
 
