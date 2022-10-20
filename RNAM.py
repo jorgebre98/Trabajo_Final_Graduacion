@@ -35,12 +35,12 @@ import wandb
 from wandb.keras import WandbCallback
 
 parser = argparse.ArgumentParser(description = 'Mimetic Neural Network for the physic process.')
-parse.add_argument('--project_name', type = str, default = 'RNAM_', help = 'Name of the run.')
-parser.add_argument('--units', type = int, default = 32, description = 'Number of the units for the RNAM.')
+parser.add_argument('--project_name', type = str, default = 'RNAM_', help = 'Name of the run.')
+parser.add_argument('--units', type = int, default = 32, help = 'Number of the units for the RNAM.')
 parser.add_argument('--epochs', type = int, default = 1000, help = 'Number of epochs for the train.')
-parser.add_argument('--batch_size', type = int, default = 1, description = 'Number of batch for the train.')
-parser.add_argument('--loss_name', type = str, default = 'loss_', description = 'Name for the figure of the loss.')
-parser.add_argument('--predict_name', type = str, default = 'Prediction_', description = 'Name for the figure of the prediction')
+parser.add_argument('--batch_size', type = int, default = 1, help = 'Number of batch for the train.')
+parser.add_argument('--loss_name', type = str, default = 'loss_', help = 'Name for the figure of the loss.')
+parser.add_argument('--predict_name', type = str, default = 'Prediction_', help = 'Name for the figure of the prediction')
 args = parser.parse_args()
 
 #   The parameters are archived in Weights and Biases (W&B), as well as the results of the
@@ -77,7 +77,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('Loss_RNAM_Probando_.png')
+    plt.savefig(args.loss_name)
 
 #   This function plots the actual output vs the output predicted by the model. 
 def plot_future(prediction, y_test):
@@ -89,7 +89,7 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
-    plt.savefig('Prediction_RNAM_Probando_.png')
+    plt.savefig(args.predict_name)
 
 #   This function calculates performance metrics for regression problems.
 def evaluate_prediction(predictions, actual):
