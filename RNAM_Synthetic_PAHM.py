@@ -34,16 +34,15 @@ wandb.login()
 
 wandb.init(project="Synthetic PAHM", 
            entity="mimetic-rna", 
-           name='Synthetic PAHM Probando2',
+           name='Probando_12',
            resume='Allow',
            notes='Prueba básica de la sintetica',
-           id='Synthetic PAHM Probando2')
+           id='Probando_12')
 wandb.config = {
     "epochs": 2000,
-    "batch_size": 1,
+    "batch_size": 16,
     "units": 32,
     "learning_rate":0.001,
-    "Dropout": 0.35
 }
 
 #   This function is used to normalized values.
@@ -63,7 +62,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('loss_Synth_norm2.png')
+    plt.savefig('loss_.png')
 
 #   This function plots the actual output vs the output predicted by the model. 
 def plot_future(prediction, y_test):
@@ -75,8 +74,8 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
-    plt.savefig('Predict_Synth_norm2.png')
-
+    plt.savefig('Predict_.png')
+    
 #   This function calculates performance metrics for regression problems.    
 def evaluate_prediction(predictions, actual):
     errors = predictions - actual
@@ -94,17 +93,17 @@ B = np.matrix([[0],[2965]])
 C = np.matrix([[1, 0]])
 
 # Number of time samples
-time = 200
+time = 2000
 sampling = 0.02
 
 print('******************* Creating the Dataset *******************', flush=True)
 # ***************** Create the training data *****************
-input_seq_train = np.random.rand(time,1)*0.25 # Input sequence for the simulation
-x0_train = np.random.rand(2,1)*0.25 # Initial state for simulation
+input_seq_train = np.concatenate((np.zeros(shape=(250,1)),np.random.rand(time,1)*0.25))
+#input_seq_train = np.random.rand(time,1)*0.25 # Input sequence for the simulation
+x0_train = np.zeros(shape=(2,1)) # Initial state for simulation
 
 state, train_label = dynamic_model(A, B, C,
-                                    x0_train, input_seq_train, 
-                                    time ,sampling) # Simulate the dynamics 
+                                   x0_train, input_seq_train, input_seq_train.shape[0], sampling) # Simulate the dynamics 
 
 train_label = np.reshape(train_label.T, (1, train_label.T.shape[0], 1)) # Label train data
 
@@ -114,12 +113,14 @@ tmp_train = np.concatenate((x0_train.T,tmp_train), axis = 0)
 train_data = np.reshape(tmp_train, (1, tmp_train.shape[0], tmp_train.shape[1])) # Train Data
 
 # ***************** Create the validation data *****************
-input_seq_val = np.random.rand(time,1)*0.25 # New input sequence
-x0_val=np.random.rand(2,1)*0.25
+time = 400
+input_seq_val = np.concatenate((np.zeros(shape=(250,1)),np.random.rand(time,1)*0.25))
+#input_seq_val = np.random.rand(time,1)*0.25) # New input sequence
+x0_val = np.zeros(shape=(2,1))
 
 state_val, val_label = dynamic_model(A, B, C,
                                      x0_val, input_seq_val, 
-                                     time ,sampling) 
+                                     input_seq_val.shape[0], sampling) 
 
 val_label = np.reshape(val_label.T,(1,val_label.T.shape[0],1)) # Label validation data
 
@@ -129,13 +130,13 @@ tmp_val = np.concatenate((x0_val.T,tmp_val), axis = 0)
 val_data = np.reshape(tmp_val, (1,tmp_val.shape[0],tmp_val.shape[1])) # Validation Data
 
 #   ***************** Create the test data *****************
-time = 200
-input_seq_test = np.random.rand(time,1)*0.25
-x0_test = np.random.rand(2,1)*0.25
+input_seq_test = np.concatenate((np.zeros(shape=(250,1)),np.random.rand(time,1)*0.25))
+#input_seq_test = np.random.rand(time,1)*0.25
+x0_test = np.zeros(shape=(2,1))
 
 state_test, test_label = dynamic_model(A, B , C,
                                       x0_test, input_seq_test, 
-                                      time ,sampling)
+                                      input_seq_test.shape[0], sampling)
 
 test_label = np.reshape(test_label.T,(1,test_label.T.shape[0],1)) # Label test data
 
@@ -148,9 +149,9 @@ train_label = normalizer(train_label, 'norm')
 val_label = normalizer(val_label, 'norm')
 test_label = normalizer(test_label, 'norm')
 
-print('Total train data is: ', train_data.shape[0], flush=True)
-print('Total validation data is: ', val_data.shape[0], flush=True)
-print('Total testing data is:: ', test_data.shape[0], flush=True)
+print('Total train data is: ', train_data.shape[1], flush=True)
+print('Total validation data is: ', val_data.shape[1], flush=True)
+print('Total testing data is:: ', test_data.shape[1], flush=True)
 print('\nTrain data shape is: ', train_data.shape, flush=True)
 print('Validation data shape is: ', val_data.shape, flush=True)
 print('Testing data shape is:: ', test_data.shape, flush=True)
@@ -168,7 +169,7 @@ model.add(Dense(1))
 
 #   Compile model
 model.compile(optimizer = RMSprop(), 
-              loss = 'mean_absolute_error', metrics = ['mae'])
+              loss = 'mean_squared_error', metrics = ['mse'])
 model.summary()
 
 #   Train model
@@ -182,8 +183,8 @@ history = model.fit(train_data, train_label ,
 testPredict = model.predict(test_data)
 
 #   Desnormalizing Values
-#testPredict = normalizer(testPredict, '')
-#test_label = normalizer(test_label, '')
+testPredict = normalizer(testPredict, '')
+test_label = normalizer(test_label, '')
 
 #   Model Evaluate
 plot_loss(history)

@@ -40,16 +40,15 @@ wandb.login()
 
 wandb.init(project="RNAM Real", 
            entity="mimetic-rna", 
-           name='RNAM_64',
+           name='RNAM_Probando_1',
            resume='Allow',
-           notes="Se entrena la RNA con 64 neuronas en las GRU y datos normalizados de 0 a 1",
-           id='RNAM_64')
+           notes="Se entrena la primer prueba",
+           id='RNAM_Probando_1')
 wandb.config = {
-    "epochs": 3500,
-    "batch_size": 1,
-    "units": 64,
+    "epochs": 2000,
+    "batch_size": 16,
+    "units": 32,
     "learning_rate":0.001,
-    "Dropout": 0.2
 }
 
 #   This function is used to normalized values.
@@ -69,7 +68,7 @@ def plot_loss (history):
     plt.ylabel('Loss')
     plt.xlabel('Epoch')
     plt.legend(loc='upper right')
-    plt.savefig('Loss_RNAM64.png')
+    plt.savefig('Loss_RNAM_Probando_.png')
 
 #   This function plots the actual output vs the output predicted by the model. 
 def plot_future(prediction, y_test):
@@ -81,7 +80,7 @@ def plot_future(prediction, y_test):
     plt.xlabel('Tiempo (ms)')
     plt.ylabel('Ángulo (°)')
     plt.legend(loc='lower right')
-    plt.savefig('Prediction_RNAM64.png')
+    plt.savefig('Prediction_RNAM_Probando_.png')
 
 #   This function calculates performance metrics for regression problems.
 def evaluate_prediction(predictions, actual):
@@ -186,19 +185,13 @@ print('******************* Finish *******************',flush=True)
 #   Model Creation
 model=Sequential()
 model.add(GRU(units=wandb.config['units'],input_shape=(None,X_train.shape[2]),return_sequences=True))
-#model.add(GRU(10,return_sequences=True))
-#model.add(GRU(100))
 
-#model.add(GRU(units = wandb.config['units'], input_shape=(None, X_train.shape[2]), return_sequences=True))
-#model.add(Dropout(wandb.config['Dropout']))
-model.add(GRU(units=wandb.config['units']))
-#model.add(Dropout(wandb.config['Dropout']))
-
+# Hidden Layer
 model.add(Dense(1))
 
 #   Compile model
-model.compile(optimizer = RMSprop(learning_rate = wandb.config['learning_rate']),
-              loss = 'mean_absolute_error', metrics = ['mae'])
+model.compile(optimizer = RMSprop(),
+              loss = 'mean_squared_error', metrics = ['mse'])
 model.summary()
 
 #   Train Model
@@ -206,7 +199,7 @@ history = model.fit(X_train, y_train ,
                     epochs = wandb.config['epochs'], batch_size = wandb.config['batch_size'], 
                     validation_data = (X_val, y_val),
                     verbose = 1, callbacks=[WandbCallback(save_model=False)])
-model.save('RNAM_64.h5')
+#model.save('RNAM_64.h5')
 
 #   Model Prediction
 testPredict = model.predict(X_test)
