@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 from numpy.linalg import inv
 
 #Libraries to create de MNN
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.layers import Dense, GRU, TimeDistributed, Dropout
 from Synthetic_PAHM import dynamic_model
@@ -29,9 +29,9 @@ from Synthetic_PAHM import dynamic_model
 import wandb
 from wandb.keras import WandbCallback
 
-parser = argparse.ArgumentParser(description = 'Mimetic Neural Network for the physic process.')
-parse.add_argument('--project_name', type = str, default = 'RNAM_', help = 'Name of the run.')
-parser.add_argument('--units', type = int, default = 32, description = 'Number of the units for the RNAM.')
+parser = argparse.ArgumentParser(description = 'Mimetic Neural Network for the mathematical model.')
+parser.add_argument('--project_name', type = str, default = 'RNAM_', help = 'Name of the run.')
+parser.add_argument('--units', type = int, default = 32, help = 'Number of the units for the RNAM.')
 parser.add_argument('--epochs', type = int, default = 1000, help = 'Number of epochs for the train.')
 parser.add_argument('--batch_size', type = int, default = 1, help = 'Number of batch for the train.')
 parser.add_argument('--loss_name', type = str, default = 'loss_',  help = 'RNAM.py')
@@ -48,7 +48,7 @@ wandb.init(project = "Synthetic PAHM",
            name = args.project_name,
            resume = 'Allow',
            #notes = 'Prueba básica de la sintetica',
-           id = args.projec_name)
+           id = args.project_name)
 wandb.config = {
     "epochs": args.epochs,
     "batch_size": args.batch_size,
@@ -172,17 +172,17 @@ print('Testing label shape is:: ', test_label.shape, flush=True)
 
 #   ***************** Neuronal Network *****************
 #   Model Creation
+#model = load_model('Probando_13.h5')
 model = Sequential()
-model.add(GRU(units=wandb.config['units'], input_shape=(None,train_data.shape[2]),
-              use_bias = True, return_sequences=True, return_state=True))
-
+model.add(GRU(units=wandb.config['units'], input_shape=(None,train_data.shape[2]), use_bias=True, return_sequences=True, initial_state=None))
 #   Hidden Layer
 model.add(Dense(1))
 
 #   Compile model
-model.compile(optimizer = RMSprop(), 
-              loss = 'mean_squared_error', metrics = ['mse'])
+model.compile(optimizer = 'adam', 
+              loss = 'mean_absolute_error', metrics = ['mae'])
 model.summary()
+model.load_weights('Probando_15.h5')
 
 #   Train model
 history = model.fit(train_data, train_label ,
