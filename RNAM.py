@@ -200,10 +200,10 @@ model.add(GRU(units=wandb.config['units'],input_shape=(None,X_train.shape[2]),re
 model.add(Dense(1))
 
 #   Compile model
-model.compile(optimizer = RMSprop(),
-              loss = 'mean_squared_error', metrics = ['mse'])
+model.compile(optimizer = RMSprop(learning_rate = wandb.config['learning_rate']),
+              loss = 'mean_absolute_error', metrics = ['mae'])
 model.summary()
-#model.load_weights('.h5')
+model.load_weights('RNAM_Probando_10.h5')
 
 #   Train Model
 history = model.fit(X_train, y_train ,
