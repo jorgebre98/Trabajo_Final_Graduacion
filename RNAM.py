@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 
 #Libraries to create de MNN
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, GRU
+from tensorflow.keras.layers import Dense, GRU
 from tensorflow.keras.optimizers import Adam, RMSprop
 
 import wandb
@@ -42,6 +42,7 @@ parser.add_argument('--batch_size', type = int, default = 1, help = 'Number of b
 parser.add_argument('--loss_name', type = str, default = 'loss_', help = 'Name for the figure of the loss (.png).')
 parser.add_argument('--predict_name', type = str, default = 'Prediction_', help = 'Name for the figure of the prediction (.png).')
 parser.add_argument('--model_name', type = str, default = 'Model_Synth_', help = 'Name for the RNAM model (.h5).')
+parser.add_argument('--load_model', type = str, default = '', help = 'Load a previously trained model.')
 args = parser.parse_args()
 
 #   The parameters are archived in Weights and Biases (W&B), as well as the results of the
@@ -140,8 +141,8 @@ print('******************* Process the Dataset *******************', flush = Tru
 print('Recolecting Data', flush = True)
 for filename in Dir:
     files = pd.read_csv(root + filename)
-    pwm = np.append(pwm, np.concatenate((np.zeros(1000), files.values[:,2])))
-    angle = np.append(angle, np.concatenate((np.zeros(1000), files.values[:,3])))
+    pwm = np.append(pwm, np.concatenate((np.zeros(2500), files.values[:,2])))
+    angle = np.append(angle, np.concatenate((np.zeros(2500), files.values[:,3])))
 
 train_data, train_label, val_data, val_label, test_data, test_label = separate_values(pwm, angle)
 
@@ -193,17 +194,20 @@ print('******************* Finish *******************',flush=True)
 
 #   ***************** Neuronal Network *****************
 #   Model Creation
-model=Sequential()
-model.add(GRU(units=wandb.config['units'],input_shape=(None,X_train.shape[2]),return_sequences=True))
+model = Sequential()
+model.add(GRU(units=wandb.config['units'], input_shape=(None, X_train.shape[2]), use_bias=True, return_sequences=True))
+model.add(GRU(units=wandb.config['units'], return_sequences=True))
 
 # Hidden Layer
 model.add(Dense(1))
 
 #   Compile model
-model.compile(optimizer = RMSprop(learning_rate = wandb.config['learning_rate']),
+model.compile(optimizer = 'adam',
               loss = 'mean_absolute_error', metrics = ['mae'])
 model.summary()
-model.load_weights('RNAM_Probando_10.h5')
+
+if (args.load_model != ''):
+    model.load_weights(args.load_model)
 
 #   Train Model
 history = model.fit(X_train, y_train ,
