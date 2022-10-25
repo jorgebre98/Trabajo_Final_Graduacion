@@ -174,7 +174,9 @@ print('Testing label shape is:: ', test_label.shape, flush=True)
 #   Model Creation
 #model = load_model('Probando_13.h5')
 model = Sequential()
-model.add(GRU(units=wandb.config['units'], input_shape=(None,train_data.shape[2]), use_bias=True, return_sequences=True)(initial_state = None))
+model.add(GRU(units=wandb.config['units'], input_shape=(None,train_data.shape[2]), use_bias=True, return_sequences=True))
+model.add(GRU(units=wandb.config['units'], return_sequences=True))
+
 #   Hidden Layer
 model.add(Dense(1))
 
@@ -182,7 +184,7 @@ model.add(Dense(1))
 model.compile(optimizer = 'adam', 
               loss = 'mean_absolute_error', metrics = ['mae'])
 model.summary()
-#model.load_weights('Probando_.h5')
+model.load_weights('Probando_19.h5')
 
 #   Train model
 history = model.fit(train_data, train_label ,
