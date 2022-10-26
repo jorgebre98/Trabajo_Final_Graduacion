@@ -142,8 +142,8 @@ print('******************* Process the Dataset *******************', flush = Tru
 print('Recolecting Data', flush = True)
 for filename in Dir:
     files = pd.read_csv(root + filename)
-    pwm = np.append(pwm, np.concatenate((np.zeros(2500), files.values[:,2])))
-    angle = np.append(angle, np.concatenate((np.zeros(2500), files.values[:,3])))
+    pwm = np.append(pwm, np.concatenate((np.zeros(1500), files.values[:,2])))
+    angle = np.append(angle, np.concatenate((np.zeros(1500), files.values[:,3])))
 
 train_data, train_label, val_data, val_label, test_data, test_label = separate_values(pwm, angle)
 
