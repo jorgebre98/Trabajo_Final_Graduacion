@@ -51,7 +51,7 @@ def Synthetic_PAHM(filename):
     A = np.matrix([[0, 1],[-17.97, -0.3801]])
     B = np.matrix([[0],[2965]])
     C = np.matrix([[1, 0]])
-
+    
     data = pd.read_csv(filename)
     input_seq = data.values[:,2]
     tiempo = len(input_seq)
@@ -59,7 +59,7 @@ def Synthetic_PAHM(filename):
     initial_state = np.array([[0],[0]])
 
     # Convert to discrete time the response of the PAHM
-    X,Y = model_dynamic(A,B,C,initial_state,input_seq,tiempo,sampling)
+    X,Y = dynamic_model(A,B,C,initial_state,input_seq,tiempo,sampling)
     plt.subplot(1,2,1)
     plt.plot(input_seq)
     plt.xlabel('Time (ms)')
@@ -72,5 +72,5 @@ def Synthetic_PAHM(filename):
     plt.title('Step response')
     plt.show()
 
-#filename = str(input('Nombre de archivo: '))
-#Synthetic_PAHM(filename)
+filename = str(input('Nombre de archivo: '))
+Synthetic_PAHM(filename)
