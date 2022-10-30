@@ -40,6 +40,8 @@ parser.add_argument('--batch_size', type = int, default = 1, help = 'Number of b
 parser.add_argument('--loss_name', type = str, default = 'loss_',  help = 'RNAM.py')
 parser.add_argument('--predict_name', type = str, default = 'Prediction_',  help = 'Name for the figure of the prediction (.png).')
 parser.add_argument('--model_name', type = str, default = 'Model_Synth_', help = 'Name for the RNAM model (.h5).')
+parser.add_argument('--loss_type', type = str, default = 'mse', help = 'Choose a loss, mse or mae')
+parser.add_argument('--load_model', type = str, default = '', help = 'Load a previously trained model (.h5).')
 args = parser.parse_args()
 
 #   The parameters are archived in Weights and Biases (W&B), as well as the results of the
@@ -207,16 +209,20 @@ print('Testing label shape is:: ', test_label.shape, flush=True)
 #model = load_model('Probando_13.h5')
 model = Sequential()
 model.add(GRU(units=wandb.config['units'], input_shape=(None,train_data.shape[2]), use_bias=True, return_sequences=True))
-model.add(GRU(units=wandb.config['units'], return_sequences=True))
+#model.add(GRU(units=wandb.config['units'], return_sequences=True))
 
 #   Hidden Layer
 model.add(Dense(1))
 
 #   Compile model
-model.compile(optimizer = 'adam', 
-              loss = 'mean_absolute_error', metrics = ['mae'])
+if (args.loss_type == 'mae'):
+    model.compile(optimizer = 'adam', loss = 'mean_absolute_error', metrics = ['mae'])
+else:
+    model.compile(optimizer = 'adam', loss = 'mean_squared_error', metrics = ['mse'])
+    
 model.summary()
-model.load_weights('Probando_19.h5')
+if (args.load_model != ''):
+    model.load_weights(args.load_model)
 
 #   Train model
 history = model.fit(train_data, train_label ,
