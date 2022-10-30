@@ -197,7 +197,7 @@ print('******************* Finish *******************',flush=True)
 #   Model Creation
 model = Sequential()
 model.add(GRU(units=wandb.config['units'], input_shape=(None, X_train.shape[2]), use_bias=True, return_sequences=True))
-model.add(GRU(units=wandb.config['units'], return_sequences=True))
+#model.add(GRU(units=wandb.config['units'], return_sequences=True))
 
 # Hidden Layer
 model.add(Dense(1))
