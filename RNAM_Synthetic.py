@@ -142,7 +142,6 @@ sampling = 0.02
 print('******************* Creating the Dataset *******************', flush=True)
 # ***************** Create the training data *****************
 input_seq_train = np.concatenate((np.zeros(shape=(250,1)),np.random.rand(time,1)*0.25))
-#input_seq_train = np.random.rand(time,1)*0.25 # Input sequence for the simulation
 x0_train = np.zeros(shape=(2,1)) # Initial state for simulation
 
 state, train_label = dynamic_model(A, B, C,
@@ -158,7 +157,6 @@ train_data = np.reshape(tmp_train, (1, tmp_train.shape[0], tmp_train.shape[1])) 
 # ***************** Create the validation data *****************
 time = 400
 input_seq_val = np.concatenate((np.zeros(shape=(250,1)),np.random.rand(time,1)*0.25))
-#input_seq_val = np.random.rand(time,1)*0.25) # New input sequence
 x0_val = np.zeros(shape=(2,1))
 
 state_val, val_label = dynamic_model(A, B, C,
@@ -174,7 +172,6 @@ val_data = np.reshape(tmp_val, (1,tmp_val.shape[0],tmp_val.shape[1])) # Validati
 
 #   ***************** Create the test data *****************
 input_seq_test = np.concatenate((np.zeros(shape=(250,1)),np.random.rand(time,1)*0.25))
-#input_seq_test = np.random.rand(time,1)*0.25
 x0_test = np.zeros(shape=(2,1))
 
 state_test, test_label = dynamic_model(A, B , C,
@@ -204,7 +201,6 @@ print('Testing label shape is:: ', test_label.shape, flush=True)
 
 #   ***************** Neuronal Network *****************
 #   Model Creation
-#model = load_model('Probando_13.h5')
 model = Sequential()
 model.add(GRU(units=wandb.config['units'], input_shape=(None,train_data.shape[2]), use_bias=True, return_sequences=True))
 #model.add(GRU(units=wandb.config['units'], return_sequences=True))
