@@ -61,8 +61,6 @@ wandb.config = {
     "learning_rate":0.001,
 }
 
-
-
 #   Function to discrete the PAHM's dynamic.
 #   Discretize by backward euler method.
 def dynamic_model(A,B,C,cond_initial,input_sequence, time_steps,h):
