@@ -47,6 +47,6 @@ Una interrupción, un led de ejecución y dos señales de reloj, una de 8 MHz y 
 <p align = justify>
 Estos bloques se conectan como se muestra en el diagrama de la figura 2
 
-<p align = center>
 ![Diseno_psoc](https://user-images.githubusercontent.com/79665536/202051062-8f0575b6-d922-4d07-9bad-1208dd9f4dac.svg)
+<p align = center>
 Diagrama de conexión de bloques en el PSoC 5 LP.
