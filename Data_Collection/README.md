@@ -2,7 +2,7 @@
 <p align = justify>
 Para la recolección de datos se ocupa programar tanto la Jetson TX2 como el PSoC 5 LP. La Jetson TX2 consta de 4 módulos para su programación distribuidos en los archivos:  <em>Data_collection.py, RepeatedTimer.py y Transmit_Receive.py</em>. Estos módulos corresponden a un temporizador, un comunicador, un convertidor de datos y recolector de datos. En la figura 1 se muestra la interconexión de los módulos.
 
-![Modulos_Jetson](https://user-images.githubusercontent.com/79665536/202050952-f726effe-ac99-4b18-aa46-27967329f2dc.svg)
+![modulos_jetson](https://user-images.githubusercontent.com/79665536/202081682-9e1274d1-807d-40b9-88a7-685a360edf50.svg)
 <p align = center>
 Figura 1. Interconexión de los módulos de la Jetson TX2.
 
