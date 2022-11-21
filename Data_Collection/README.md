@@ -10,7 +10,7 @@ Figura 1. Interconexión de los módulos de la Jetson TX2.
 El archivo <em>Data_collection.py</em> corresponde al recolector de datos, cuya función es recopilar y reinsertar los datos enviados y recibidos vía PSoC hacia y desde el PAHM. Además, se definen dos tipos de entradas: la <em>manual</em> que, por medio de una interfaz gráfica con un deslizador permite cambiar manualmente el valor PWM a transmitir y almacenar para futuras reproducciones. Por otro lado, se tiene la entrada de <em>reproducción</em> (<i>playback</i>). Este tipo de entrada reutiliza la misma entrada de un experimento previo, para de este modo reproducir y así evaluar efecto en la salida producido por factores variantes en el tiempo del PAHM ante la misma secuencia de entrada, así como determinar el promedio y la desviación estándar de las respuestas entregadas en repeticiones experimentales. Una vez finalizado los experimentos, se ponen a disposición en un archivo .csv con el fin de utilizarlos para el entrenamiento de la RNAM.
 
 <p align = justify>
-El PAHM opera con muestreo homogéneo cada $20$\,ms por lo que se necesita que el código se ejecute y dé respuesta en ese lapso de tiempo concreto. Por ello, se 
+El PAHM opera con muestreo homogéneo cada 20 ms por lo que se necesita que el código se ejecute y dé respuesta en ese lapso de tiempo concreto. Por ello, se 
 implementa el archivo <em>RepeatedTimer.py</em>, el cual es necesario para llamar una función cada determinado tiempo, encargada de transmitir y recibir valores en el 
 tiempo requerido por el PAHM. 
 
@@ -25,7 +25,7 @@ Ejemplo del llamado: python3 Data_collection.py --input 'Archivo_a_leer.csv' --o
 
 <p align = justify>
 Ahora bien, en cuanto al sistema PSoC, se utiliza el archivo main.c el cual contiene la lógica para que el sistema funcione. Además de ello, en la aplicación <i>PSoC Creator</i> se utiliza:
-<li>Un PWM digital con resolución de 16 bits y un periodo de 250 $\mu$s.</li>
+<li>Un PWM digital con resolución de 16 bits y un periodo de 250 &#956s.</li>
 <li>Un decodificador de cuadratura con una resolución de 16 bits y una resolución de contador de 1.</li>
 <li>Un bloque UART con tasa de transmisión de 115200, 1 bytes da datos, no se activa bit de paridad y no se hace uso del control de flujo.</li>
 <li>Un temporizador, donde se configura con un periodo de 20 ms.</li>
