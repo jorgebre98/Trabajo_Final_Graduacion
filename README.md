@@ -27,7 +27,7 @@ Los pasos que se siguen en el preprocesamiento de los datos se resumen en la fig
 Figura 2. Etapas del preprocesamiento del conjunto de datos.
 
 <p align = justify>
-La arquitectura de la RNAM consiste en una capa GRU y una capa densa. La capa GRU es la encargada de aprender la dinámica del sistema, donde se define el tamaño de entrada de esta capa como flexible con (\textit{None}, 2). Puesto que de otro modo a todos los vectores de entrenamiento, validación y prueba se les exigiría tener la misma cantidad de datos. La salida de la capa GRU se conecta a la capa densa, la cual posee solo una neurona que se encarga de hacer la regresión del valor del ángulo a predecir, donde se utiliza una capa de activación lineal. Para entrenamientos, se incorpora una capa de pérdida con las métricas MSE o MAE y se utiliza el optimizador Adam. La arquitectura final de la red se muestra en la figura 3. 
+La arquitectura de la RNAM consiste en una capa GRU y una capa densa. La capa GRU es la encargada de aprender la dinámica del sistema, donde se define el tamaño de entrada de esta capa como flexible con (None, 2). Puesto que de otro modo a todos los vectores de entrenamiento, validación y prueba se les exigiría tener la misma cantidad de datos. La salida de la capa GRU se conecta a la capa densa, la cual posee solo una neurona que se encarga de hacer la regresión del valor del ángulo a predecir, donde se utiliza una capa de activación lineal. Para entrenamientos, se incorpora una capa de pérdida con las métricas MSE o MAE y se utiliza el optimizador Adam. La arquitectura final de la red se muestra en la figura 3. 
 
 ![Arquitectura RNAM](https://user-images.githubusercontent.com/79665536/202080510-57b35954-6ed4-4b93-a0fa-95b68014990c.svg)
 <p align = center>
@@ -50,14 +50,14 @@ En el entrenamiento se varía los hiperparámetros de neuronas de las capa GRU y
 <p align = justify>
 La implementación de la RNAM bajo el escenario sintético presenta una respuesta satisfactoria con un error absoluto medio de $0.0762^{\circ}$ en sus predicciones. Paralelamente, se determina que el uso de una capa GRU es el adecuado para aprender el comportamiento del modelo, ya que el uso de dos capas GRU disminuye el error en $0.0651^{\circ}$. La predición del model óptimo se muestra en la figura 4.
 
-![Predict_perfecto](https://user-images.githubusercontent.com/79665536/202081240-8dad5f01-bc70-449f-b6a8-92b4789ca5df.svg)
+![Predict_perfecto](https://user-images.githubusercontent.com/79665536/203123184-102de1fa-595c-40cc-aced-74eebb569a51.svg)
 <p align = center>
 Figura 4. Predicción de la mejor RNAM sintética. El modelo posee solo una capa GRU y fue preentrenado dos veces.
   
 <p align = justify>
 Por otro lado, se implementa la RNAM con datos del PAHM físico, cuyos resultados también son satisfactorios prediciendo con un error absoluto medio de $1,0875^{\circ}$. Donde a diferencia de la RNAM sintética, el uso de dos capas GRU resulta eficaz, ya que reduce el error en  $2,817^{\circ}$. La predición del model óptimo se muestra en la figura 5.
 
-![Predict_RNAM_17](https://user-images.githubusercontent.com/79665536/202081172-edc50964-2574-4915-bc07-a79c79280bc4.svg)
+![Predict_RNAM_17](https://user-images.githubusercontent.com/79665536/203123067-b49ae325-1639-40d0-82ec-f7bb719efb8b.svg)
 <p align = center>
 Figura 5. Predicción el modelo óptimo de la RNAM real. Em modelo posee 2 capas GRU y preentrenamiento
    
@@ -70,6 +70,6 @@ En cuanto a su comparación con el modelo sintético, este presenta un error abs
 <p align = justify>
 Por otro lado, el modelo matemático lineal permite aproximar el comportamiento dinámico del PAHM solo para ángulos pequeños, no obstante, en ángulos mayores a $14^{\circ}$ el error en las predicciones incrementa, lo que limita la aproximación del comportamiento del PAHM, lo que se muestra en la figura 6. En cambio, el uso de la RNAM permite una aproximación del comportamiento del PAHM en todo su espacio de operación, como se observa en la figura 5. Esto es conveniente para el uso de este como un simulador de la planta. Además, a pesar del efecto de las no linealidades y variaciones en el tiempo del PAHM, logra aprender ese comportamiento dinámico y dar una respuesta aproximada.
 
-![modelo_vs_real](https://user-images.githubusercontent.com/79665536/202081323-a255b6ce-04a0-4a48-8943-ad0a5b0e56f8.svg)
+![modelo_vs_real](https://user-images.githubusercontent.com/79665536/203122959-79dd9894-d6d6-4cc6-9534-fcb04c11b6cf.svg)
 <p align = center>
 Figura 6. Comparación de la respuesta del modelo matemático con la PAHM.
