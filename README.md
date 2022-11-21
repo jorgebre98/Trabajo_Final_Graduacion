@@ -62,7 +62,7 @@ Por otro lado, se implementa la RNAM con datos del PAHM físico, cuyos resultado
 Figura 5. Predicción el modelo óptimo de la RNAM real. Em modelo posee 2 capas GRU y preentrenamiento
    
 <p align = justify>
-De los resultados obtenidos se puede concluir que el preentrenamiento de la red es necesario ya que reduce el MAE en las predicciones del modelo. En cuanto a la cantidad de capas GRU, para el escenario sintético es suficiente el modelado con una capa GRU, ya que el uso de dos capas GRU incrementa el tiempo de entrenamiento por una reducción del MAE de $0,0651^{\circ}$ en comparación al resultado dado por el modelo entrenado con una capa GRU. Por lo que se considera no viable. Por otro lado, para el escenario real, el uso de dos capas GRU proporciona una mayor reducción del error comparado con el modelo de una capa GRU, siendo de $2,817^{\circ}$, por lo que es viable para este caso.
+De los resultados obtenidos se puede concluir que el preentrenamiento de la red es necesario ya que reduce el MAE en las predicciones del modelo. En cuanto a la cantidad de capas GRU, para el escenario sintético es suficiente el modelado con una capa GRU, ya que el uso de dos capas GRU incrementa el tiempo de entrenamiento por una reducción del MAE de $0,044^{\circ}$ en comparación al resultado dado por el modelo entrenado con una capa GRU, por lo que se descarta. Por otro lado, para el escenario real, el uso de dos capas GRU proporciona una mayor reducción del error comparado con el modelo de una capa GRU.
 
 <p align = justify>
 En cuanto a su comparación con el modelo sintético, este presenta un error absoluto promedio de $17,5177^{\circ}$ con respecto a la respuesta real de la PAHM, como se observa en la figura 3.
