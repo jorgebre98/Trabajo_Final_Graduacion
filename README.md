@@ -48,7 +48,7 @@ En el entrenamiento se varía los hiperparámetros de neuronas de las capa GRU y
 <li>load_model, se indica el nombre del modelo que se quiere cargar.</li>
 
 <p align = justify>
-La implementación de la RNAM bajo el escenario sintético presenta una respuesta satisfactoria con un error absoluto medio de $0.0762^{\circ}$ en sus predicciones. Paralelamente, se determina que el uso de una capa GRU es el adecuado para aprender el comportamiento del modelo, ya que el uso de dos capas GRU disminuye el error en $0.0651^{\circ}$. La predición del model óptimo se muestra en la figura 4.
+La implementación de la RNAM bajo el escenario sintético presenta una respuesta satisfactoria con un error absoluto medio de $0.0621^{\circ}$ en sus predicciones. Paralelamente, se determina que el uso de una capa GRU es el adecuado para aprender el comportamiento del modelo, ya que el uso de dos capas GRU disminuye el error en $0.044^{\circ}$. La predición del model óptimo se muestra en la figura 4.
 
 ![Predict_perfecto](https://user-images.githubusercontent.com/79665536/203123184-102de1fa-595c-40cc-aced-74eebb569a51.svg)
 <p align = center>
